@@ -70,3 +70,7 @@ UserSettings/
 Logs/
 .vs/
 ProjectSettings/EditorBuildSettings.asset
+
+Assets/Sounds/Musics/music-to-test.mp3
+
+Assets/Sounds/Musics/music-to-test.mp3.meta

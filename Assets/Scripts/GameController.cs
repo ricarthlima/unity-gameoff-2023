@@ -22,6 +22,10 @@ public class GameController : MonoBehaviour
     [SerializeField] private Image imageNextPlatform;
     [SerializeField] private Image imageSecondPlatform;
 
+    [Header("BGM and SFX")]
+    [SerializeField] private AudioSource audioBGM;
+    [SerializeField] private AudioSource audioRewindSFX;
+
     [Header("Prefabs")]
     [SerializeField] GameObject portalPrefab;
     [SerializeField] GameObject[] listPlatformsPrefab;
@@ -105,10 +109,13 @@ public class GameController : MonoBehaviour
     {
         isCycleGameRunning = false;
         cameraFollow.SetFalling(true);
+        audioBGM.Stop();
+        audioRewindSFX.Play();
     }
 
     public void Restart()
     {
+        audioRewindSFX.Stop();
         portalPosition = player.transform.position;
         timePassed = 0;
         isCycleGameRunning = true;
@@ -128,6 +135,11 @@ public class GameController : MonoBehaviour
         panelMainMenu.SetActive(true);
         panelGameHUD.SetActive(false);
         isCycleGameRunning = false;
+    }
+
+    public void PlayerLeftPlatform()
+    {
+        audioBGM.Play();
     }
 
     #region "UI"
