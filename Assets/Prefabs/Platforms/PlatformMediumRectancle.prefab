@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8029027886216582931}
   - component: {fileID: 4821879914491837323}
   - component: {fileID: 7262780413541254427}
+  - component: {fileID: 4776299478933246586}
   m_Layer: 0
   m_Name: PlatformMediumRectancle
   m_TagString: Untagged
@@ -146,4 +147,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f41c429fd7688394caccb45df623a434, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeToDestroy: 4
+  timeToDestroy: 1
+--- !u!114 &4776299478933246586
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1568444981645813013}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cb4759cb1bb73041af58ad29edff5e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

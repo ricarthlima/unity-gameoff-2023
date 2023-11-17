@@ -5,8 +5,8 @@ using UnityEngine;
 public class SelfDestroyController : MonoBehaviour
 {
     GameController gameController;
-
     [SerializeField] float timeToDestroy;
+    bool isStoped = false;
 
     float timePassed = 0;
     void Start()
@@ -17,7 +17,7 @@ public class SelfDestroyController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (gameController.isCycleGameRunning)
+        if (gameController.isCycleGameRunning && !isStoped)
         {
             timePassed += Time.deltaTime;
             if (timePassed >= timeToDestroy)
@@ -25,5 +25,15 @@ public class SelfDestroyController : MonoBehaviour
                 Destroy(gameObject);
             }
         }        
+    }
+
+    public void StopTime()
+    {
+        isStoped = true;
+    }
+
+    public void ResumeTime()
+    {
+        isStoped = false;
     }
 }

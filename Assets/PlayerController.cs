@@ -5,16 +5,17 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] GameController gameController;
+    public Rigidbody2D rb;
 
     void Start()
     {
-        
+        rb = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        Debug.Log(GetComponent<Rigidbody2D>().velocity);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

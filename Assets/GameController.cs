@@ -69,7 +69,7 @@ public class GameController : MonoBehaviour
 
                 if (phaseBPM == PhaseBPM.gameOver)
                 {
-                    if (player.gameObject.transform.position.y < portalPosition.y - 1)
+                    if (player.rb.velocity.y < -5) // player.gameObject.transform.position.y < portalPosition.y - 1)
                     {                        
                         IsFalling();
                     }
