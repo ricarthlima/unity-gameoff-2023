@@ -12,10 +12,8 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        Debug.Log(GetComponent<Rigidbody2D>().velocity);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

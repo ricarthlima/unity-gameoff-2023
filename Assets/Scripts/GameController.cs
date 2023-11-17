@@ -33,9 +33,9 @@ public class GameController : MonoBehaviour
     [HideInInspector] public bool isCycleGameRunning = false;
     List<GameObject> listNextPlatforms = new List<GameObject>();
 
-    // Game Phases
-    enum PhaseBPM { portal, player, gameOver };
-    PhaseBPM phaseBPM = PhaseBPM.portal;
+
+    bool isCanSpawnPlatform = false;
+    float cooldownPlatformPassed = 0;
 
     // Infos
     float maxHeightTraveled = 0;
@@ -62,61 +62,43 @@ public class GameController : MonoBehaviour
         if (isStartedGame && isCycleGameRunning)
         {
             VerifyMouseClick();
+
+            if (player.rb.velocity.y < -5)
+            {
+                IsFalling();
+                return;
+            }
+
             timePassed += Time.deltaTime;
             if (timePassed > (60f/(float) bpm))
             {
                 timePassed = 0;
 
-                if (phaseBPM == PhaseBPM.gameOver)
-                {
-                    if (player.rb.velocity.y < -5) // player.gameObject.transform.position.y < portalPosition.y - 1)
-                    {                        
-                        IsFalling();
-                    }
-                    else
-                    {
-                        phaseBPM = PhaseBPM.portal;
-                    }
-                    return;
-                }
+                // Teleport player
+                player.gameObject.transform.position = portalPosition;
 
-                if (phaseBPM == PhaseBPM.player)
-                {
-                    player.gameObject.transform.position = portalPosition;
-                    phaseBPM = PhaseBPM.gameOver;
-                    return;
-                }
-
-                if (phaseBPM == PhaseBPM.portal)
-                {
-                    GeneratePortal();
-                    phaseBPM = PhaseBPM.player;
-                    
-                    return;
-                }
-
+                // Generate next portal
+                GeneratePortal();
             }
 
-            heightTraveled = (player.transform.position.y + 4.029932f) * 1.8f;
-            if (heightTraveled > maxHeightTraveled)
+            cooldownPlatformPassed += Time.deltaTime;
+            if (cooldownPlatformPassed > (60f / (float)bpm) - 0.2f)
             {
-                maxHeightTraveled = heightTraveled;
+                isCanSpawnPlatform = true;
             }
-            bpm = 60 + (int) (player.transform.position.y);
+
             UpdateUI();
         }        
     }
 
     void GeneratePortal()
     {
-        
         float y = player.gameObject.transform.position.y + Random.Range(3,6);
         float x = Random.Range(-1*maxSpawnX, maxSpawnX);
 
         portalPosition = new Vector2(x, y);
 
         Instantiate(portalPrefab, portalPosition, Quaternion.identity);
-        
     }
 
     void IsFalling()
@@ -151,6 +133,12 @@ public class GameController : MonoBehaviour
     #region "UI"
     void UpdateUI()
     {
+        heightTraveled = (player.transform.position.y + 4.029932f) * 1.8f;
+        if (heightTraveled > maxHeightTraveled)
+        {
+            maxHeightTraveled = heightTraveled;
+        }
+
         textBPM.text = "BPM: " + bpm.ToString();
         textHeightTraveled.text = "Max Height: " + maxHeightTraveled.ToString("F2") + "m\nHeight: " + heightTraveled.ToString("F2")+"m";
     }
@@ -165,13 +153,20 @@ public class GameController : MonoBehaviour
     #region "Platform"
     void GeneratePlatform(Vector2 touchPosition)
     {
-        Vector3 clickOnWorld = Camera.main.ScreenToWorldPoint(touchPosition);
-        Instantiate(listNextPlatforms[0], new Vector3(clickOnWorld.x, clickOnWorld.y, 0), Quaternion.identity);
+        if (isCycleGameRunning && isCanSpawnPlatform)
+        {
+            Vector3 clickOnWorld = Camera.main.ScreenToWorldPoint(touchPosition);
+            Instantiate(listNextPlatforms[0], new Vector3(clickOnWorld.x, clickOnWorld.y, 0), Quaternion.identity);
 
-        listNextPlatforms[0] = listNextPlatforms[1];
-        listNextPlatforms[1] = listPlatformsPrefab[Random.Range(0, listPlatformsPrefab.Length)];
+            listNextPlatforms[0] = listNextPlatforms[1];
+            listNextPlatforms[1] = listPlatformsPrefab[Random.Range(0, listPlatformsPrefab.Length)];
 
-        UpdateImagesPlatform();
+            UpdateImagesPlatform();
+
+            isCanSpawnPlatform = false;
+            cooldownPlatformPassed = 0;
+        }
+        
     }
     #endregion
 
@@ -203,7 +198,6 @@ public class GameController : MonoBehaviour
             if (isClicked)
             {
                 GeneratePlatform(touchPosition);
-
 
                 RaycastHit2D[] hits = Physics2D.RaycastAll(Camera.main.ScreenToWorldPoint(touchPosition), Vector2.zero);
                 foreach (RaycastHit2D hit in hits)
