@@ -7,14 +7,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] GameController gameController;
     public Rigidbody2D rb;
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision != null)
+        if (collision!= null & collision.CompareTag("StartPlatform"))
         {
-            if (collision.gameObject.CompareTag("StartPlatform"))
-            {
-                gameController.Restart();
-            }
+            gameController.TouchedTheGround();
         }
     }
 
@@ -24,7 +21,7 @@ public class PlayerController : MonoBehaviour
         {
             if (collision.gameObject.CompareTag("StartPlatform"))
             {
-                gameController.PlayerLeftPlatform();
+                //gameController.PlayerLeftPlatform();
             }
         }
     }

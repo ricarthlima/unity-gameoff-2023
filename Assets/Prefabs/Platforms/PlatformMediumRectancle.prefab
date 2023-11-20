@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 4776299478933246586}
   m_Layer: 0
   m_Name: PlatformMediumRectancle
-  m_TagString: Untagged
+  m_TagString: Platform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -130,7 +130,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 69154ff43fcbb4844b439f67f8dfe58a, type: 2}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
@@ -147,7 +147,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f41c429fd7688394caccb45df623a434, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeToDestroy: 1
+  timeToDestroy: 1.5
 --- !u!114 &4776299478933246586
 MonoBehaviour:
   m_ObjectHideFlags: 0

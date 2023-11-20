@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class GameController : MonoBehaviour
 {
     [Header("Controllers")]
-    public int bpm;
+    public float bpm;
     [SerializeField] private float maxSpawnX;
 
     [Header("SceneObjects")]
@@ -33,9 +33,10 @@ public class GameController : MonoBehaviour
     // Controllers
     float timePassed = 0;
     Vector2 portalPosition = Vector2.zero;
-    bool isStartedGame = false;
-    [HideInInspector] public bool isCycleGameRunning = false;
+    bool isStartGame = false;
+    bool isGameRunning = false;
     List<GameObject> listNextPlatforms = new List<GameObject>();
+    bool isFirstPlatform = true;
 
 
     bool isCanSpawnPlatform = false;
@@ -45,6 +46,12 @@ public class GameController : MonoBehaviour
     float maxHeightTraveled = 0;
     float heightTraveled = 0;
 
+    // Esperar para recomeçar
+    float countTimeToRestart = 0;
+    readonly float waitTimeToRestart = 0.5f;
+    bool isWaitingTimeToRestart = false;
+
+    #region "Life Cycles"
     void Start()
     {
         portalPosition = player.transform.position;
@@ -60,40 +67,73 @@ public class GameController : MonoBehaviour
         UpdateImagesPlatform();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        if (isStartedGame && isCycleGameRunning)
+        if (isStartGame)
         {
-            VerifyMouseClick();
+            bool isWaiting = CycleToRestartGame();
 
-            if (player.rb.velocity.y < -5)
+            if (isGameRunning && !isWaiting)
             {
-                IsFalling();
-                return;
+                UpdateUI();
+                VerifyMouseClick();
+
+                bool isFalling = CycleTestFalling();
+                if (!isFalling)
+                {
+                    CycleBPM();
+                    CycleCooldownPlatform();
+                }
             }
-
-            timePassed += Time.deltaTime;
-            if (timePassed > (60f/(float) bpm))
-            {
-                timePassed = 0;
-
-                // Teleport player
-                player.gameObject.transform.position = portalPosition;
-
-                // Generate next portal
-                GeneratePortal();
-            }
-
-            cooldownPlatformPassed += Time.deltaTime;
-            if (cooldownPlatformPassed > (60f / (float)bpm) - 0.2f)
-            {
-                isCanSpawnPlatform = true;
-            }
-
-            UpdateUI();
-        }        
+        }
     }
+
+    bool CycleToRestartGame()
+    {
+        if (isWaitingTimeToRestart)
+        {
+            countTimeToRestart += Time.deltaTime;
+            if (countTimeToRestart > waitTimeToRestart)
+            {
+                Restart();
+                isWaitingTimeToRestart = false;
+                countTimeToRestart = 0;
+            }
+            return true;
+        }
+        return false;        
+    }
+
+    bool CycleTestFalling()
+    {
+        if (player.rb.velocity.y < -5)
+        {
+            IsFalling();
+            return true;
+        }
+        return false;
+    }
+
+    void CycleBPM()
+    {
+        timePassed += Time.deltaTime;
+        if (timePassed > (60f / (float) bpm))
+        {
+            timePassed = 0;
+            player.gameObject.transform.position = portalPosition;
+            GeneratePortal();
+        }
+    }
+    
+    void CycleCooldownPlatform()
+    {
+        cooldownPlatformPassed += Time.deltaTime;
+        if (cooldownPlatformPassed > (60f / (float) bpm) - 0.2f)
+        {
+            isCanSpawnPlatform = true;
+        }
+    }
+    #endregion
 
     void GeneratePortal()
     {
@@ -107,26 +147,34 @@ public class GameController : MonoBehaviour
 
     void IsFalling()
     {
-        isCycleGameRunning = false;
+        isGameRunning = false;
         cameraFollow.SetFalling(true);
         audioBGM.Stop();
         audioRewindSFX.Play();
     }
+    
+    void Restart()
+    {
+        timePassed = 0;
+        portalPosition = player.transform.position;
+        isGameRunning = true;
+        isFirstPlatform = true;
+        cameraFollow.SetFalling(false);
+    }
 
-    public void Restart()
+    public void TouchedTheGround()
     {
         audioRewindSFX.Stop();
-        portalPosition = player.transform.position;
-        timePassed = 0;
-        isCycleGameRunning = true;
-        cameraFollow.SetFalling(false);
+        isWaitingTimeToRestart = true;
     }
 
     public void StartGame()
     {
         panelMainMenu.SetActive(false);
         panelGameHUD.SetActive(true);
-        isStartedGame = true;
+        isGameRunning = true;
+        isStartGame = true;
+        Time.timeScale = 1;
         Restart();
     }
 
@@ -134,12 +182,7 @@ public class GameController : MonoBehaviour
     {
         panelMainMenu.SetActive(true);
         panelGameHUD.SetActive(false);
-        isCycleGameRunning = false;
-    }
-
-    public void PlayerLeftPlatform()
-    {
-        audioBGM.Play();
+        Time.timeScale = 0;
     }
 
     #region "UI"
@@ -165,8 +208,14 @@ public class GameController : MonoBehaviour
     #region "Platform"
     void GeneratePlatform(Vector2 touchPosition)
     {
-        if (isCycleGameRunning && isCanSpawnPlatform)
+        if (isGameRunning && isCanSpawnPlatform)
         {
+            if (isFirstPlatform)
+            {
+                isFirstPlatform = false;
+                audioBGM.Play();
+            }
+
             Vector3 clickOnWorld = Camera.main.ScreenToWorldPoint(touchPosition);
             Instantiate(listNextPlatforms[0], new Vector3(clickOnWorld.x, clickOnWorld.y, 0), Quaternion.identity);
 
@@ -185,7 +234,7 @@ public class GameController : MonoBehaviour
     #region "Verify Clicks and Touchs"
     void VerifyMouseClick()
     {
-        if (isStartedGame && isCycleGameRunning)
+        if (isGameRunning)
         {
             bool isClicked = false;
             Vector2 touchPosition = Vector2.negativeInfinity;
