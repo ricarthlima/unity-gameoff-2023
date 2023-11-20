@@ -38,18 +38,27 @@ public class GameController : MonoBehaviour
     List<GameObject> listNextPlatforms = new List<GameObject>();
     bool isFirstPlatform = true;
 
-
-    bool isCanSpawnPlatform = false;
-    float cooldownPlatformPassed = 0;
+    
 
     // Infos
     float maxHeightTraveled = 0;
     float heightTraveled = 0;
 
     // Esperar para recomeçar
+    bool isWaitingTimeToRestart = false;
     float countTimeToRestart = 0;
     readonly float waitTimeToRestart = 0.5f;
-    bool isWaitingTimeToRestart = false;
+
+    // Spawn da Plafatorma
+    bool isCanSpawnPlatform = false;
+    float countRangeTimePlataform = 0;
+    [SerializeField] private float waitRangeTimePlatform;
+
+    // Teleport player
+    bool isNeedToTeleportPlayer = false;
+    float countTeleportPlayer = 0;
+    [SerializeField] private float rangeTeleportPlayer;
+
 
     #region "Life Cycles"
     void Start()
@@ -72,10 +81,10 @@ public class GameController : MonoBehaviour
         if (isStartGame)
         {
             bool isWaiting = CycleToRestartGame();
+            UpdateUI();
 
             if (isGameRunning && !isWaiting)
-            {
-                UpdateUI();
+            {                
                 VerifyMouseClick();
 
                 bool isFalling = CycleTestFalling();
@@ -83,6 +92,7 @@ public class GameController : MonoBehaviour
                 {
                     CycleBPM();
                     CycleCooldownPlatform();
+                    CycleTeleportPlayer();
                 }
             }
         }
@@ -119,25 +129,45 @@ public class GameController : MonoBehaviour
         timePassed += Time.deltaTime;
         if (timePassed > (60f / (float) bpm))
         {
-            timePassed = 0;
-            player.gameObject.transform.position = portalPosition;
             GeneratePortal();
+
+            timePassed = 0;
+            isCanSpawnPlatform = true;
+            isNeedToTeleportPlayer = true;
         }
     }
     
     void CycleCooldownPlatform()
     {
-        cooldownPlatformPassed += Time.deltaTime;
-        if (cooldownPlatformPassed > (60f / (float) bpm) - 0.2f)
+        if (isCanSpawnPlatform)
         {
-            isCanSpawnPlatform = true;
+            countRangeTimePlataform += Time.deltaTime;
+            if (countRangeTimePlataform > waitRangeTimePlatform)
+            {
+                countRangeTimePlataform = 0;                
+                isCanSpawnPlatform = false;
+            }
+        }
+    }
+
+    void CycleTeleportPlayer()
+    {
+        if (isNeedToTeleportPlayer)
+        {
+            countTeleportPlayer += Time.deltaTime;
+            if (countTeleportPlayer > rangeTeleportPlayer)
+            {
+                player.gameObject.transform.position = portalPosition;                
+                isNeedToTeleportPlayer = false;
+                countTeleportPlayer = 0;
+            }
         }
     }
     #endregion
 
     void GeneratePortal()
     {
-        float y = player.gameObject.transform.position.y + Random.Range(3,6);
+        float y = player.gameObject.transform.position.y + Random.Range(1.5f, 3.5f);
         float x = Random.Range(-1*maxSpawnX, maxSpawnX);
 
         portalPosition = new Vector2(x, y);
@@ -225,7 +255,7 @@ public class GameController : MonoBehaviour
             UpdateImagesPlatform();
 
             isCanSpawnPlatform = false;
-            cooldownPlatformPassed = 0;
+            countRangeTimePlataform = 0;
         }
         
     }
