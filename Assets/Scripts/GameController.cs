@@ -25,9 +25,12 @@ public class GameController : MonoBehaviour
     [Header("BGM and SFX")]
     [SerializeField] private AudioSource audioBGM;
     [SerializeField] private AudioSource audioRewindSFX;
+    [SerializeField] private GameObject sfxPrefabError;
 
     [Header("Prefabs")]
     [SerializeField] GameObject portalPrefab;
+    [SerializeField] GameObject playerPrefab;
+    [SerializeField] private GameObject beatIndicatorPrefab;
     [SerializeField] GameObject[] listPlatformsPrefab;
 
     // Controllers
@@ -38,7 +41,8 @@ public class GameController : MonoBehaviour
     List<GameObject> listNextPlatforms = new List<GameObject>();
     bool isFirstPlatform = true;
 
-    
+    GameObject currentPortal;
+    VisualBeatIndicatorController currentBeatIndicator;
 
     // Infos
     float maxHeightTraveled = 0;
@@ -51,14 +55,12 @@ public class GameController : MonoBehaviour
 
     // Spawn da Plafatorma
     bool isCanSpawnPlatform = false;
-    float countRangeTimePlataform = 0;
-    [SerializeField] private float waitRangeTimePlatform;
 
-    // Teleport player
-    bool isNeedToTeleportPlayer = false;
-    float countTeleportPlayer = 0;
-    [SerializeField] private float rangeTeleportPlayer;
+    float timerBeat = 0;
+    bool isFirstStep;
+    bool isSecondStep;
 
+    bool hasMissedClick = false;
 
     #region "Life Cycles"
     void Start()
@@ -71,7 +73,7 @@ public class GameController : MonoBehaviour
 
         // Platforms
         listNextPlatforms.Add(listPlatformsPrefab[0]);
-        listNextPlatforms.Add(listPlatformsPrefab[1]);
+        listNextPlatforms.Add(listPlatformsPrefab[0]);
 
         UpdateImagesPlatform();
     }
@@ -90,9 +92,49 @@ public class GameController : MonoBehaviour
                 bool isFalling = CycleTestFalling();
                 if (!isFalling)
                 {
-                    CycleBPM();
-                    CycleCooldownPlatform();
-                    CycleTeleportPlayer();
+                    timerBeat += Time.deltaTime;
+                    if (timerBeat > ((60f / bpm) * 0.3f) && !isFirstStep)
+                    {
+                        // Gera portal
+                        GeneratePortal();
+
+                        // Liberar o Clique
+                        isCanSpawnPlatform = true;
+
+                        // Passa de etapa
+                        isFirstStep = true;
+                    }
+                    if (timerBeat > ((60f/bpm) * 0.85f) && !isSecondStep && !hasMissedClick)
+                    {
+                        // Passa de etapa / Libera clique correto
+                        isSecondStep = true;
+
+
+                        // Indicador fica amaerelo
+                        if (currentBeatIndicator != null)
+                        {
+                            currentBeatIndicator.MakeYellow();
+                        }
+
+                        
+                    }
+                    else if (timerBeat >= (60f/bpm))
+                    {
+                        // Teleporta o player
+                        player.gameObject.transform.position = portalPosition;
+
+                        // Proibe o clique
+                        isCanSpawnPlatform = false;
+
+                        // Reiniciar beat
+                        timerBeat = 0;
+                        isFirstStep = false;
+                        isSecondStep = false;
+                        hasMissedClick = false;
+
+                        // Destruir portal
+                        DestroyPortal();
+                    }
                 }
             }
         }
@@ -123,56 +165,24 @@ public class GameController : MonoBehaviour
         }
         return false;
     }
-
-    void CycleBPM()
-    {
-        timePassed += Time.deltaTime;
-        if (timePassed > (60f / (float) bpm))
-        {
-            GeneratePortal();
-
-            timePassed = 0;
-            isCanSpawnPlatform = true;
-            isNeedToTeleportPlayer = true;
-        }
-    }
-    
-    void CycleCooldownPlatform()
-    {
-        if (isCanSpawnPlatform)
-        {
-            countRangeTimePlataform += Time.deltaTime;
-            if (countRangeTimePlataform > waitRangeTimePlatform)
-            {
-                countRangeTimePlataform = 0;                
-                isCanSpawnPlatform = false;
-            }
-        }
-    }
-
-    void CycleTeleportPlayer()
-    {
-        if (isNeedToTeleportPlayer)
-        {
-            countTeleportPlayer += Time.deltaTime;
-            if (countTeleportPlayer > rangeTeleportPlayer)
-            {
-                player.gameObject.transform.position = portalPosition;                
-                isNeedToTeleportPlayer = false;
-                countTeleportPlayer = 0;
-            }
-        }
-    }
     #endregion
 
     void GeneratePortal()
     {
-        float y = player.gameObject.transform.position.y + Random.Range(1.5f, 3.5f);
+        float y = player.gameObject.transform.position.y + Random.Range(1.5f, 5f);
         float x = Random.Range(-1*maxSpawnX, maxSpawnX);
 
         portalPosition = new Vector2(x, y);
 
-        Instantiate(portalPrefab, portalPosition, Quaternion.identity);
+        currentPortal = Instantiate(portalPrefab, portalPosition, Quaternion.identity);
+        currentBeatIndicator = currentPortal.GetComponent<PortalController>().visualBeatIndicator;
+        currentBeatIndicator.bpm = bpm;
+    }
+
+    void DestroyPortal()
+    {
+        currentPortal.GetComponent<SelfDestroyController>().timeToDestroy = 0.25f;
+        currentPortal.GetComponent<SelfDestroyController>().isStoped = false;
     }
 
     void IsFalling()
@@ -195,6 +205,11 @@ public class GameController : MonoBehaviour
     public void TouchedTheGround()
     {
         audioRewindSFX.Stop();
+        if (player.gameObject.transform.rotation.z != 0)
+        {
+            Vector3 position = player.transform.position;
+            player.transform.localEulerAngles = Vector3.zero;
+        }
         isWaitingTimeToRestart = true;
     }
 
@@ -216,6 +231,12 @@ public class GameController : MonoBehaviour
     }
 
     #region "UI"
+
+    public void UpdateBPM(float newBPM)
+    {
+        bpm = newBPM;
+    }
+
     void UpdateUI()
     {
         heightTraveled = (player.transform.position.y + 4.029932f) * 1.8f;
@@ -240,22 +261,31 @@ public class GameController : MonoBehaviour
     {
         if (isGameRunning && isCanSpawnPlatform)
         {
-            if (isFirstPlatform)
+            if (isSecondStep)
             {
-                isFirstPlatform = false;
-                audioBGM.Play();
+                if (isFirstPlatform)
+                {
+                    isFirstPlatform = false;
+                    audioBGM.Play();
+                }
+
+                Vector3 clickOnWorld = Camera.main.ScreenToWorldPoint(touchPosition);
+                Instantiate(listNextPlatforms[0], new Vector3(clickOnWorld.x, clickOnWorld.y, 0), Quaternion.identity);
+
+                listNextPlatforms[0] = listNextPlatforms[1];
+                listNextPlatforms[1] = listPlatformsPrefab[Random.Range(0, listPlatformsPrefab.Length)];
+
+                UpdateImagesPlatform();
+
+                isCanSpawnPlatform = false;
             }
-
-            Vector3 clickOnWorld = Camera.main.ScreenToWorldPoint(touchPosition);
-            Instantiate(listNextPlatforms[0], new Vector3(clickOnWorld.x, clickOnWorld.y, 0), Quaternion.identity);
-
-            listNextPlatforms[0] = listNextPlatforms[1];
-            listNextPlatforms[1] = listPlatformsPrefab[Random.Range(0, listPlatformsPrefab.Length)];
-
-            UpdateImagesPlatform();
-
-            isCanSpawnPlatform = false;
-            countRangeTimePlataform = 0;
+            else
+            {
+                Instantiate(sfxPrefabError);
+                currentBeatIndicator.MakeRed();
+                hasMissedClick = true;
+            }
+            
         }
         
     }

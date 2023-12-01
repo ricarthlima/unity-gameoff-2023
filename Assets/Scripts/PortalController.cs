@@ -4,9 +4,8 @@ using UnityEngine;
 
 public class PortalController : MonoBehaviour
 {
+    public VisualBeatIndicatorController visualBeatIndicator;
 
-    
-    // Start is called before the first frame update
     void Start()
     {
         

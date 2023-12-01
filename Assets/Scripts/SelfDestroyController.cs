@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class SelfDestroyController : MonoBehaviour
 {
-    [SerializeField] float timeToDestroy;
+    public float timeToDestroy;
+    public bool isStoped = true;
 
-    private bool isStoped = false;
     private float timePassed = 0;
 
     void Update()

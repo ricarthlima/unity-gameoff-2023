@@ -21,7 +21,7 @@ public class PlatformController : MonoBehaviour
         {
             if (collision.gameObject.CompareTag("Player"))
             {
-                GetComponent<SelfDestroyController>().ResumeTime();
+                Destroy(gameObject);
             }
         }
     }

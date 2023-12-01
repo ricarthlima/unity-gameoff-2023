@@ -4,8 +4,14 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] GameController gameController;
+    public GameController gameController;
     public Rigidbody2D rb;
+
+    private void Start()
+    {
+    }
+
+
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
