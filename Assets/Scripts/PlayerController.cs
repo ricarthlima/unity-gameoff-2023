@@ -6,6 +6,7 @@ public class PlayerController : MonoBehaviour
 {
     public GameController gameController;
     public Rigidbody2D rb;
+    public bool isTouchingGround;
 
     private void Start()
     {
@@ -18,6 +19,7 @@ public class PlayerController : MonoBehaviour
         if (collision!= null & collision.CompareTag("StartPlatform"))
         {
             gameController.TouchedTheGround();
+            isTouchingGround = true;
         }
     }
 
@@ -27,7 +29,7 @@ public class PlayerController : MonoBehaviour
         {
             if (collision.gameObject.CompareTag("StartPlatform"))
             {
-                //gameController.PlayerLeftPlatform();
+                isTouchingGround = false;
             }
         }
     }

@@ -94,9 +94,8 @@ public class GameController : MonoBehaviour
                 bool isFalling = CycleTestFalling();
                 if (!isFalling)
                 {
-                    timerBeat += Time.deltaTime;
-
-
+                    timerBeat += Time.deltaTime;                    
+                    
                     switch (beatStep)
                     {
                         // 1. Um beat antes 
@@ -137,11 +136,19 @@ public class GameController : MonoBehaviour
                             }
                         case 3:
                             {
+                                if (timerBeat >= (60f / bpm * 0.9f))
+                                {
+                                    player.GetComponent<Animator>().SetTrigger("enterPortal");
+                                    beatStep++;
+                                }
+                                return;
+                            }
+                        case 4:
+                            {
                                 if (timerBeat >= (60f / bpm) && !hasMissedClick)
                                 {
                                     // Teleporta o player
                                     player.gameObject.transform.position = portalPosition;
-
                                     RestartBeat();
                                 }
 
@@ -204,6 +211,11 @@ public class GameController : MonoBehaviour
 
     void RestartBeat()
     {
+        // Reaparece o player
+        player.GetComponent<Animator>().SetTrigger("exitPortal");
+        player.GetComponent<Animator>().ResetTrigger("enterPortal");
+        player.GetComponent<Animator>().ResetTrigger("exitPortal");
+
         // Proibe o clique
         canSpawnPlatform = false;
 
@@ -329,6 +341,12 @@ public class GameController : MonoBehaviour
                 Instantiate(sfxPrefabError);
                 currentBeatIndicator.MakeRed();
                 hasMissedClick = true;
+
+                // Para o caso do player errar a primeira plataforma
+                if (player.isTouchingGround)
+                {
+                    player.gameObject.transform.position = portalPosition;
+                }
             }
             
         }
