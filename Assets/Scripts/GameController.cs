@@ -16,6 +16,7 @@ public class GameController : MonoBehaviour
     public PlayerController player;
 
     [Header("UI")]
+    [SerializeField] Canvas renderCanvas;
     [SerializeField] GameObject panelMainMenu;
     [SerializeField] GameObject panelGameHUD;
     [SerializeField] TextMeshProUGUI textHeightTraveled;
@@ -33,6 +34,12 @@ public class GameController : MonoBehaviour
     [SerializeField] GameObject playerPrefab;
     [SerializeField] private GameObject beatIndicatorPrefab;
     [SerializeField] GameObject[] listPlatformsPrefab;
+
+    [Header("BeatTexts")]
+    [SerializeField] GameObject textFailPrefab;
+    [SerializeField] GameObject textOKPrefab;
+    [SerializeField] GameObject textNicePrefab;
+    [SerializeField] GameObject textPerfectPrefab;
 
     // Controllers
     float timePassed = 0;
@@ -94,7 +101,13 @@ public class GameController : MonoBehaviour
                 bool isFalling = CycleTestFalling();
                 if (!isFalling)
                 {
-                    timerBeat += Time.deltaTime;                    
+                    timerBeat += Time.deltaTime;      
+                    
+                    if (hasMissedClick && timerBeat >= (60f / bpm))
+                    {
+                        player.gameObject.transform.position = portalPosition;
+                        return;
+                    }
                     
                     switch (beatStep)
                     {
@@ -136,7 +149,7 @@ public class GameController : MonoBehaviour
                             }
                         case 3:
                             {
-                                if (timerBeat >= (60f / bpm * 0.9f) || (timerBeat >= ((60f/bpm) - 0.333)))
+                                if (timerBeat >= (60f / bpm * 0.875f) || (timerBeat >= ((60f/bpm) - 0.333)))
                                 {
                                     player.EnterPortalAnimation();
                                     beatStep++;
@@ -309,6 +322,31 @@ public class GameController : MonoBehaviour
     #endregion
 
     #region "Platform"
+    void VerifyClickAccuracy(Vector2 touchPosition)
+    {
+        Vector3 clickOnWorld = Camera.main.ScreenToWorldPoint(touchPosition);        
+        if (!canHitTheBeat)
+        {
+            Instantiate(textFailPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
+        }
+        else
+        {
+            if (timerBeat > ((60f / bpm) * 0.55f))
+            {
+                Instantiate(textOKPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
+            }
+            else if (timerBeat > ((60f / bpm) * 0.75f))
+            {
+                Instantiate(textNicePrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
+            }
+            else if (timerBeat > ((60f / bpm) * 0.90f))
+            {
+                Instantiate(textPerfectPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
+            }
+        }    
+
+    }
+
     void GeneratePlatform(Vector2 touchPosition)
     {
         if (isGameRunning && canSpawnPlatform)
@@ -337,15 +375,13 @@ public class GameController : MonoBehaviour
                 currentBeatIndicator.MakeRed();
                 hasMissedClick = true;
 
-                // Para o caso do player errar a primeira plataforma
+                // Para o caso do player errar a primeira plataforma                
                 if (player.isTouchingGround)
                 {
                     player.gameObject.transform.position = portalPosition;
                 }
-            }
-            
+            }    
         }
-        
     }
     #endregion
 
@@ -377,6 +413,7 @@ public class GameController : MonoBehaviour
             if (isClicked)
             {
                 GeneratePlatform(touchPosition);
+                VerifyClickAccuracy(touchPosition);
 
                 RaycastHit2D[] hits = Physics2D.RaycastAll(Camera.main.ScreenToWorldPoint(touchPosition), Vector2.zero);
                 foreach (RaycastHit2D hit in hits)

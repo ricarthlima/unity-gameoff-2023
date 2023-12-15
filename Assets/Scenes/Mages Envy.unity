@@ -276,6 +276,7 @@ MonoBehaviour:
   waitSecondsToRestart: 2
   cameraFollow: {fileID: 519420033}
   player: {fileID: 897785323}
+  renderCanvas: {fileID: 146276028}
   panelMainMenu: {fileID: 1027991273}
   panelGameHUD: {fileID: 1163168305}
   textHeightTraveled: {fileID: 1956250817}
@@ -290,6 +291,10 @@ MonoBehaviour:
   beatIndicatorPrefab: {fileID: 4152947042946917205, guid: b87072dd255a8434788352ba7a782ec2, type: 3}
   listPlatformsPrefab:
   - {fileID: 1568444981645813013, guid: 89601c5f89b1ec142bbf183310f8aa19, type: 3}
+  textFailPrefab: {fileID: 4632297300078922084, guid: a9d249502ff3199459f7345b9f87503d, type: 3}
+  textOKPrefab: {fileID: 3218089599421841951, guid: 306b14a2d1f03744db4136bf9cf1307c, type: 3}
+  textNicePrefab: {fileID: 7165533485624536448, guid: c1bd5b05ec734174f94f8c241fdebc07, type: 3}
+  textPerfectPrefab: {fileID: 752204403898711218, guid: 25c161c39475a9d4fa625d0caf0a1074, type: 3}
 --- !u!4 &137176481
 Transform:
   m_ObjectHideFlags: 0
