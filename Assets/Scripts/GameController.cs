@@ -149,7 +149,7 @@ public class GameController : MonoBehaviour
                             }
                         case 3:
                             {
-                                if (timerBeat >= (60f / bpm * 0.875f) || (timerBeat >= ((60f/bpm) - 0.333)))
+                                if (timerBeat >= (60f / bpm * 0.85f) || (timerBeat >= ((60f/bpm) - 0.333)))
                                 {
                                     player.EnterPortalAnimation();
                                     beatStep++;
@@ -217,7 +217,7 @@ public class GameController : MonoBehaviour
     {
         if (currentPortal != null)
         {
-            currentPortal.GetComponent<SelfDestroyController>().timeToDestroy = 0.25f;
+            currentPortal.GetComponent<SelfDestroyController>().timeToDestroy = 0f;
             currentPortal.GetComponent<SelfDestroyController>().isStoped = false;
         }        
     }
@@ -324,6 +324,7 @@ public class GameController : MonoBehaviour
     #region "Platform"
     void VerifyClickAccuracy(Vector2 touchPosition)
     {
+
         Vector3 clickOnWorld = Camera.main.ScreenToWorldPoint(touchPosition);        
         if (!canHitTheBeat)
         {
@@ -331,17 +332,16 @@ public class GameController : MonoBehaviour
         }
         else
         {
-            if (timerBeat > ((60f / bpm) * 0.55f))
+            if ((timerBeat / (60f / bpm) >= 0.90f))
             {
-                Instantiate(textOKPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
-            }
-            else if (timerBeat > ((60f / bpm) * 0.75f))
+                Instantiate(textPerfectPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
+            }else if ((timerBeat / (60f / bpm) >= 0.75f))
             {
                 Instantiate(textNicePrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
             }
-            else if (timerBeat > ((60f / bpm) * 0.90f))
+            else if ((timerBeat / (60f / bpm) >= 0.55f))
             {
-                Instantiate(textPerfectPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
+                Instantiate(textOKPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
             }
         }    
 

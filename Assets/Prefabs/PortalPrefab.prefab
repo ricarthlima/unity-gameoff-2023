@@ -26,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 274720634823922318}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -1.37, z: 0}
+  m_LocalPosition: {x: 0, y: -2.5, z: 0}
   m_LocalScale: {x: 0.15, y: 0.15, z: 0.15}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -103,7 +103,6 @@ MonoBehaviour:
   isPassedTime: 0
   beat: {fileID: 2895449344861091455}
   portalSprite: {fileID: 4233540716220579747}
-  beatTextPrefab: {fileID: 119079121998536317, guid: 4b4178e3f3733cd44b4bcfd1c0f2f130, type: 3}
   isRunning: 1
 --- !u!1 &1884389433286179304
 GameObject:
