@@ -5,6 +5,7 @@ using UnityEngine;
 public class PortalController : MonoBehaviour
 {
     public VisualBeatIndicatorController visualBeatIndicator;
+    public GameObject portalSprite;
 
     void Start()
     {

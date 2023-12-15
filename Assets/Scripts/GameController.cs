@@ -8,7 +8,8 @@ public class GameController : MonoBehaviour
 {
     [Header("Controllers")]
     public float bpm;
-    [SerializeField] private float maxSpawnX;
+    [SerializeField] private float maxSpawnX;    
+    [SerializeField] float waitSecondsToRestart;
 
     [Header("SceneObjects")]
     public SmoothCameraFollow cameraFollow;
@@ -51,16 +52,17 @@ public class GameController : MonoBehaviour
     // Esperar para recomeçar
     bool isWaitingTimeToRestart = false;
     float countTimeToRestart = 0;
-    readonly float waitTimeToRestart = 0.5f;
 
     // Spawn da Plafatorma
-    bool isCanSpawnPlatform = false;
+    bool canSpawnPlatform = false;
 
     float timerBeat = 0;
-    bool isFirstStep;
-    bool isSecondStep;
 
     bool hasMissedClick = false;
+
+    bool canHitTheBeat = false;
+
+    int beatStep = 0;
 
     #region "Life Cycles"
     void Start()
@@ -93,48 +95,59 @@ public class GameController : MonoBehaviour
                 if (!isFalling)
                 {
                     timerBeat += Time.deltaTime;
-                    if (timerBeat > ((60f / bpm) * 0.3f) && !isFirstStep)
+
+
+                    switch (beatStep)
                     {
-                        // Gera portal
-                        GeneratePortal();
+                        // 1. Um beat antes 
+                        case 0:
+                            {
+                                // Gera o portal e o indicador
+                                GeneratePortal();
 
-                        // Liberar o Clique
-                        isCanSpawnPlatform = true;
+                                // Liberar o Clique
+                                canSpawnPlatform = true;
+                                beatStep++;
+                                return;
+                            }
+                        case 1:
+                            {
+                                if (timerBeat > ((60f / bpm) * 0.55f) && !hasMissedClick)
+                                {
+                                    currentBeatIndicator.ShowPortal();
+                                    beatStep++;
+                                }
+                                return;
+                            }
+                        case 2:
+                            {
+                                if (timerBeat > ((60f / bpm) * 0.65f) && !hasMissedClick)
+                                {
+                                    // Libera clique correto
+                                    canHitTheBeat = true;
 
-                        // Passa de etapa
-                        isFirstStep = true;
-                    }
-                    if (timerBeat > ((60f/bpm) * 0.85f) && !isSecondStep && !hasMissedClick)
-                    {
-                        // Passa de etapa / Libera clique correto
-                        isSecondStep = true;
+                                    // Indicador fica amaerelo
+                                    if (currentBeatIndicator != null)
+                                    {
+                                        currentBeatIndicator.MakeYellow();
+                                    }
+                                    beatStep++;
+                                }
+                                return;
+                            }
+                        case 3:
+                            {
+                                if (timerBeat >= (60f / bpm) && !hasMissedClick)
+                                {
+                                    // Teleporta o player
+                                    player.gameObject.transform.position = portalPosition;
 
+                                    RestartBeat();
+                                }
 
-                        // Indicador fica amaerelo
-                        if (currentBeatIndicator != null)
-                        {
-                            currentBeatIndicator.MakeYellow();
-                        }
-
-                        
-                    }
-                    else if (timerBeat >= (60f/bpm))
-                    {
-                        // Teleporta o player
-                        player.gameObject.transform.position = portalPosition;
-
-                        // Proibe o clique
-                        isCanSpawnPlatform = false;
-
-                        // Reiniciar beat
-                        timerBeat = 0;
-                        isFirstStep = false;
-                        isSecondStep = false;
-                        hasMissedClick = false;
-
-                        // Destruir portal
-                        DestroyPortal();
-                    }
+                                return;
+                            }
+                    }                    
                 }
             }
         }
@@ -145,9 +158,10 @@ public class GameController : MonoBehaviour
         if (isWaitingTimeToRestart)
         {
             countTimeToRestart += Time.deltaTime;
-            if (countTimeToRestart > waitTimeToRestart)
+            if (countTimeToRestart > waitSecondsToRestart)
             {
                 Restart();
+                RestartBeat();
                 isWaitingTimeToRestart = false;
                 countTimeToRestart = 0;
             }
@@ -181,16 +195,47 @@ public class GameController : MonoBehaviour
 
     void DestroyPortal()
     {
-        currentPortal.GetComponent<SelfDestroyController>().timeToDestroy = 0.25f;
-        currentPortal.GetComponent<SelfDestroyController>().isStoped = false;
+        if (currentPortal != null)
+        {
+            currentPortal.GetComponent<SelfDestroyController>().timeToDestroy = 0.25f;
+            currentPortal.GetComponent<SelfDestroyController>().isStoped = false;
+        }        
+    }
+
+    void RestartBeat()
+    {
+        // Proibe o clique
+        canSpawnPlatform = false;
+
+        // Reiniciar beat
+        timerBeat = 0;
+        beatStep = 0;
+        canHitTheBeat = false;
+        hasMissedClick = false;
+
+        // Destruir portal
+        DestroyPortal();
     }
 
     void IsFalling()
     {
         isGameRunning = false;
+        canHitTheBeat = false;
         cameraFollow.SetFalling(true);
         audioBGM.Stop();
         audioRewindSFX.Play();
+
+        GameObject[] listPortalsRemaining = GameObject.FindGameObjectsWithTag("Portal");
+
+        foreach (GameObject portal in listPortalsRemaining)
+        {
+            Destroy(portal);
+        }
+        GameObject[] listPlatformRemaining = GameObject.FindGameObjectsWithTag("Portal");
+        foreach (GameObject platform in listPlatformRemaining)
+        {
+            Destroy(platform);
+        }
     }
     
     void Restart()
@@ -199,7 +244,6 @@ public class GameController : MonoBehaviour
         portalPosition = player.transform.position;
         isGameRunning = true;
         isFirstPlatform = true;
-        cameraFollow.SetFalling(false);
     }
 
     public void TouchedTheGround()
@@ -210,6 +254,7 @@ public class GameController : MonoBehaviour
             Vector3 position = player.transform.position;
             player.transform.localEulerAngles = Vector3.zero;
         }
+        cameraFollow.SetFalling(false);
         isWaitingTimeToRestart = true;
     }
 
@@ -259,9 +304,9 @@ public class GameController : MonoBehaviour
     #region "Platform"
     void GeneratePlatform(Vector2 touchPosition)
     {
-        if (isGameRunning && isCanSpawnPlatform)
+        if (isGameRunning && canSpawnPlatform)
         {
-            if (isSecondStep)
+            if (canHitTheBeat)
             {
                 if (isFirstPlatform)
                 {
@@ -277,7 +322,7 @@ public class GameController : MonoBehaviour
 
                 UpdateImagesPlatform();
 
-                isCanSpawnPlatform = false;
+                canSpawnPlatform = false;
             }
             else
             {

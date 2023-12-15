@@ -9,6 +9,7 @@ public class VisualBeatIndicatorController : MonoBehaviour
     public bool isPassedTime;
 
     [SerializeField] private GameObject beat;
+    [SerializeField] private GameObject portalSprite;
 
     private float timePassed;
     public bool isRunning = true;
@@ -21,9 +22,15 @@ public class VisualBeatIndicatorController : MonoBehaviour
         }
     }
 
+    public void ShowPortal()
+    {
+        portalSprite.SetActive(true);
+    }
+
+
     public void MakeYellow()
     {
-        beat.GetComponent<SpriteRenderer>().color = Color.yellow;
+        beat.GetComponent<SpriteRenderer>().color = Color.yellow;        
     }
     
     public void MakeRed()

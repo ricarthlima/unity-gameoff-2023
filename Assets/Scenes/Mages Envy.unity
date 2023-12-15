@@ -273,6 +273,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bpm: 42.5
   maxSpawnX: 2
+  waitSecondsToRestart: 2
   cameraFollow: {fileID: 519420033}
   player: {fileID: 897785323}
   panelMainMenu: {fileID: 1027991273}
@@ -3620,6 +3621,10 @@ PrefabInstance:
     - target: {fileID: 8354821827748195305, guid: 329934e9a7b2a314bb8ad39560d18cf4, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8354821827748195306, guid: 329934e9a7b2a314bb8ad39560d18cf4, type: 3}
+      propertyPath: m_LinearDrag
+      value: 0.33
       objectReference: {fileID: 0}
     - target: {fileID: 8354821827748195307, guid: 329934e9a7b2a314bb8ad39560d18cf4, type: 3}
       propertyPath: m_Enabled

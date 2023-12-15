@@ -8,27 +8,35 @@ public class SmoothCameraFollow : MonoBehaviour
     [SerializeField] private float damping;
     [SerializeField] private Vector3 offset;
 
-    private bool isFalling;
-
     private Vector3 velocity = Vector3.zero;
+
+    private float innerDamping;
+    private Vector3 innerOffset = Vector3.zero;
+
+    private void Start()
+    {
+        innerOffset = offset;
+        innerDamping = damping;
+    }
 
     void FixedUpdate()
     {
-        if (!isFalling)
-        {
-            Vector3 movePosistion = target.position + offset;
-            Vector3 damp = Vector3.SmoothDamp(transform.position, movePosistion, ref velocity, damping);
-            transform.position = new Vector3(transform.position.x, damp.y, transform.position.z);
-        }
-        else
-        {
-            transform.position = new Vector3(transform.position.x, target.position.y, transform.position.z);
-        }
-        
+        Vector3 movePosistion = target.position + innerOffset;
+        Vector3 damp = Vector3.SmoothDamp(transform.position, movePosistion, ref velocity, innerDamping);
+        transform.position = new Vector3(transform.position.x, damp.y, transform.position.z);
     }
 
     public void SetFalling(bool setFalling)
     {
-        isFalling = setFalling;
+        if (setFalling)
+        {
+            innerOffset = Vector3.zero;
+            innerDamping = 0.2f;
+        }
+        else
+        {
+            innerOffset = offset;
+            innerDamping = damping;
+        }
     }
 }

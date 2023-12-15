@@ -9,13 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 202886584822805423}
-  - component: {fileID: 943102559769604219}
-  - component: {fileID: 99781209888040627}
   - component: {fileID: 6895348184472930750}
   - component: {fileID: 744525991645534661}
   m_Layer: 0
   m_Name: PortalPrefab
-  m_TagString: Untagged
+  m_TagString: Portal
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -33,16 +31,78 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6853187017737810346}
+  - {fileID: 1056426926936105026}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &943102559769604219
-SpriteRenderer:
+--- !u!114 &6895348184472930750
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1884389433286179304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30b71b32983955f40b8abb2621ed6b6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  visualBeatIndicator: {fileID: 6886121494497069497}
+  portalSprite: {fileID: 4233540716220579747}
+--- !u!114 &744525991645534661
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1884389433286179304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f41c429fd7688394caccb45df623a434, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timeToDestroy: 0
+  isStoped: 1
+--- !u!1 &4233540716220579747
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1056426926936105026}
+  - component: {fileID: 7036833977731364680}
+  - component: {fileID: 1515680204981520590}
+  m_Layer: 0
+  m_Name: Portal
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &1056426926936105026
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4233540716220579747}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 202886584822805423}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!212 &7036833977731364680
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4233540716220579747}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -88,14 +148,14 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!95 &99781209888040627
+--- !u!95 &1515680204981520590
 Animator:
   serializedVersion: 5
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1884389433286179304}
+  m_GameObject: {fileID: 4233540716220579747}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 018b6fea658a1bd469089d8edffe2b13, type: 2}
@@ -109,33 +169,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &6895348184472930750
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1884389433286179304}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30b71b32983955f40b8abb2621ed6b6a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  visualBeatIndicator: {fileID: 6886121494497069497}
---- !u!114 &744525991645534661
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1884389433286179304}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f41c429fd7688394caccb45df623a434, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  timeToDestroy: 0
-  isStoped: 1
 --- !u!1001 &7924468921103230571
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -143,6 +176,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 202886584822805423}
     m_Modifications:
+    - target: {fileID: 3632493382558101458, guid: b87072dd255a8434788352ba7a782ec2, type: 3}
+      propertyPath: portalSprite
+      value: 
+      objectReference: {fileID: 4233540716220579747}
     - target: {fileID: 3666553759895361473, guid: b87072dd255a8434788352ba7a782ec2, type: 3}
       propertyPath: m_RootOrder
       value: 0

@@ -6,6 +6,7 @@ TagManager:
   tags:
   - StartPlatform
   - Platform
+  - Portal
   layers:
   - Default
   - TransparentFX
