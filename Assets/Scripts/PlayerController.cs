@@ -8,11 +8,18 @@ public class PlayerController : MonoBehaviour
     public Rigidbody2D rb;
     public bool isTouchingGround;
 
+    Animator animator;
+
     private void Start()
     {
+        animator = GetComponent<Animator>();
     }
 
-
+    public void EnterPortalAnimation()
+    {
+        animator.SetTrigger("enterPortal");
+        StartCoroutine(ExitPortal());
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -32,5 +39,11 @@ public class PlayerController : MonoBehaviour
                 isTouchingGround = false;
             }
         }
+    }
+
+    IEnumerator ExitPortal()
+    {
+        yield return new WaitForSeconds(0.2f);
+        animator.SetTrigger("exitPortal");
     }
 }

@@ -136,9 +136,9 @@ public class GameController : MonoBehaviour
                             }
                         case 3:
                             {
-                                if (timerBeat >= (60f / bpm * 0.9f))
+                                if (timerBeat >= (60f / bpm * 0.9f) || (timerBeat >= ((60f/bpm) - 0.333)))
                                 {
-                                    player.GetComponent<Animator>().SetTrigger("enterPortal");
+                                    player.EnterPortalAnimation();
                                     beatStep++;
                                 }
                                 return;
@@ -211,11 +211,6 @@ public class GameController : MonoBehaviour
 
     void RestartBeat()
     {
-        // Reaparece o player
-        player.GetComponent<Animator>().SetTrigger("exitPortal");
-        player.GetComponent<Animator>().ResetTrigger("enterPortal");
-        player.GetComponent<Animator>().ResetTrigger("exitPortal");
-
         // Proibe o clique
         canSpawnPlatform = false;
 
