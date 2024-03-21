@@ -10,6 +10,7 @@ public class GameController : MonoBehaviour
     public float bpm;
     [SerializeField] private float maxSpawnX;    
     [SerializeField] float waitSecondsToRestart;
+    public int level = 0;
 
     [Header("SceneObjects")]
     public SmoothCameraFollow cameraFollow;
@@ -28,6 +29,8 @@ public class GameController : MonoBehaviour
     [SerializeField] private AudioSource audioBGM;
     [SerializeField] private AudioSource audioRewindSFX;
     [SerializeField] private GameObject sfxPrefabError;
+    [SerializeField] private List<AudioClip> listBGMS;
+    [SerializeField] private List<int> listBPMS;
 
     [Header("Prefabs")]
     [SerializeField] GameObject portalPrefab;
@@ -35,11 +38,6 @@ public class GameController : MonoBehaviour
     [SerializeField] private GameObject beatIndicatorPrefab;
     [SerializeField] GameObject[] listPlatformsPrefab;
 
-    [Header("BeatTexts")]
-    [SerializeField] GameObject textFailPrefab;
-    [SerializeField] GameObject textOKPrefab;
-    [SerializeField] GameObject textNicePrefab;
-    [SerializeField] GameObject textPerfectPrefab;
 
     // Controllers
     float timePassed = 0;
@@ -71,6 +69,9 @@ public class GameController : MonoBehaviour
 
     int beatStep = 0;
 
+    // Levels
+    
+
     #region "Life Cycles"
     void Start()
     {
@@ -85,10 +86,12 @@ public class GameController : MonoBehaviour
         listNextPlatforms.Add(listPlatformsPrefab[0]);
 
         UpdateImagesPlatform();
+        CallScene();
     }
 
     private void Update()
     {
+        CycleVerifyNextScene();
         if (isStartGame)
         {
             bool isWaiting = CycleToRestartGame();
@@ -199,8 +202,61 @@ public class GameController : MonoBehaviour
         }
         return false;
     }
+    
+    public void StartGame()
+    {
+        panelMainMenu.SetActive(false);
+        panelGameHUD.SetActive(true);
+        isGameRunning = true;
+        isStartGame = true;
+        Time.timeScale = 1;
+        Restart();
+    }
+    
+    public void PauseGame()
+    {
+        panelMainMenu.SetActive(true);
+        panelGameHUD.SetActive(false);
+        Time.timeScale = 0;
+    }
+    
+    void CycleVerifyNextScene()
+    {
+        if (audioBGM.time >= (listBGMS[level].length - 2))
+        {
+            if (level < listBGMS.Count - 1)
+            {
+                level++;
+                audioBGM.Stop();
+                CallScene();
+            }
+        }
+    }
+
+    void CallScene()
+    {
+        audioBGM.clip = listBGMS[level];
+        bpm = listBPMS[level];
+
+        if (level == 0)
+        {
+            
+        }
+
+        if (level == 1)
+        {
+
+        }
+
+        if (level == 2)
+        {
+
+        }
+    }
+
     #endregion
 
+    #region "Game Logic"
     void GeneratePortal()
     {
         float y = player.gameObject.transform.position.y + Random.Range(1.5f, 5f);
@@ -278,22 +334,7 @@ public class GameController : MonoBehaviour
         isWaitingTimeToRestart = true;
     }
 
-    public void StartGame()
-    {
-        panelMainMenu.SetActive(false);
-        panelGameHUD.SetActive(true);
-        isGameRunning = true;
-        isStartGame = true;
-        Time.timeScale = 1;
-        Restart();
-    }
-
-    public void PauseGame()
-    {
-        panelMainMenu.SetActive(true);
-        panelGameHUD.SetActive(false);
-        Time.timeScale = 0;
-    }
+    #endregion
 
     #region "UI"
 
@@ -322,30 +363,7 @@ public class GameController : MonoBehaviour
     #endregion
 
     #region "Platform"
-    void VerifyClickAccuracy(Vector2 touchPosition)
-    {
-
-        Vector3 clickOnWorld = Camera.main.ScreenToWorldPoint(touchPosition);        
-        if (!canHitTheBeat)
-        {
-            Instantiate(textFailPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
-        }
-        else
-        {
-            if ((timerBeat / (60f / bpm) >= 0.90f))
-            {
-                Instantiate(textPerfectPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
-            }else if ((timerBeat / (60f / bpm) >= 0.75f))
-            {
-                Instantiate(textNicePrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
-            }
-            else if ((timerBeat / (60f / bpm) >= 0.55f))
-            {
-                Instantiate(textOKPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
-            }
-        }    
-
-    }
+    
 
     void GeneratePlatform(Vector2 touchPosition)
     {
@@ -413,17 +431,16 @@ public class GameController : MonoBehaviour
             if (isClicked)
             {
                 GeneratePlatform(touchPosition);
-                VerifyClickAccuracy(touchPosition);
 
                 RaycastHit2D[] hits = Physics2D.RaycastAll(Camera.main.ScreenToWorldPoint(touchPosition), Vector2.zero);
                 foreach (RaycastHit2D hit in hits)
                 {
                     if (hit.collider != null)
                     {
-                        //if (hit.collider.CompareTag("Area"))
-                        //{
-                            
-                        //}
+                        if (hit.collider.CompareTag("PlatformBeat"))
+                        {
+                            hit.collider.gameObject.GetComponent<PlatformBeatController>().OnTouched(touchPosition);
+                        }
                     }
                 }
             }

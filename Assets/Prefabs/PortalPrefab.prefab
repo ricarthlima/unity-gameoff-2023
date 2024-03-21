@@ -113,8 +113,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 202886584822805423}
+  - component: {fileID: 2406887750027873780}
   - component: {fileID: 6895348184472930750}
   - component: {fileID: 744525991645534661}
+  - component: {fileID: 6058616851325274969}
   m_Layer: 0
   m_Name: PortalPrefab
   m_TagString: Portal
@@ -139,6 +141,24 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2406887750027873780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1884389433286179304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fcd829ed92782c4449a4118202bb0387, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timeEarly: 0
+  timeOK: 0
+  timeNice: 0
+  timePerfect: 0
+  timeLate: 0
+  timeCount: 0
 --- !u!114 &6895348184472930750
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -167,6 +187,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   timeToDestroy: 0
   isStoped: 1
+--- !u!58 &6058616851325274969
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1884389433286179304}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: -2.52}
+  serializedVersion: 2
+  m_Radius: 2.09
 --- !u!1 &2895449344861091455
 GameObject:
   m_ObjectHideFlags: 0
