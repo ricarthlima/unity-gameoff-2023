@@ -28,14 +28,12 @@ public class GameController : MonoBehaviour
     [Header("BGM and SFX")]
     [SerializeField] private AudioSource audioBGM;
     [SerializeField] private AudioSource audioRewindSFX;
-    [SerializeField] private GameObject sfxPrefabError;
     [SerializeField] private List<AudioClip> listBGMS;
     [SerializeField] private List<int> listBPMS;
 
     [Header("Prefabs")]
     [SerializeField] GameObject portalPrefab;
     [SerializeField] GameObject playerPrefab;
-    [SerializeField] private GameObject beatIndicatorPrefab;
     [SerializeField] GameObject[] listPlatformsPrefab;
 
 
@@ -44,11 +42,11 @@ public class GameController : MonoBehaviour
     Vector2 portalPosition = Vector2.zero;
     bool isStartGame = false;
     bool isGameRunning = false;
-    List<GameObject> listNextPlatforms = new List<GameObject>();
+    public List<GameObject> listNextPlatforms = new List<GameObject>();
     bool isFirstPlatform = true;
 
     GameObject currentPortal;
-    VisualBeatIndicatorController currentBeatIndicator;
+    
 
     // Infos
     float maxHeightTraveled = 0;
@@ -63,15 +61,10 @@ public class GameController : MonoBehaviour
 
     float timerBeat = 0;
 
-    bool hasMissedClick = false;
-
-    bool canHitTheBeat = false;
-
-    int beatStep = 0;
+    public bool hasMissedClick = false;
 
     // Levels
     
-
     #region "Life Cycles"
     void Start()
     {
@@ -106,71 +99,14 @@ public class GameController : MonoBehaviour
                 {
                     timerBeat += Time.deltaTime;      
                     
-                    if (hasMissedClick && timerBeat >= (60f / bpm))
+                    if (timerBeat >= (60f / bpm))
                     {
                         player.gameObject.transform.position = portalPosition;
+                        GeneratePortal();
+
+                        timerBeat = 0;
                         return;
                     }
-                    
-                    switch (beatStep)
-                    {
-                        // 1. Um beat antes 
-                        case 0:
-                            {
-                                // Gera o portal e o indicador
-                                GeneratePortal();
-
-                                // Liberar o Clique
-                                canSpawnPlatform = true;
-                                beatStep++;
-                                return;
-                            }
-                        case 1:
-                            {
-                                if (timerBeat > ((60f / bpm) * 0.55f) && !hasMissedClick)
-                                {
-                                    currentBeatIndicator.ShowPortal();
-                                    beatStep++;
-                                }
-                                return;
-                            }
-                        case 2:
-                            {
-                                if (timerBeat > ((60f / bpm) * 0.65f) && !hasMissedClick)
-                                {
-                                    // Libera clique correto
-                                    canHitTheBeat = true;
-
-                                    // Indicador fica amaerelo
-                                    if (currentBeatIndicator != null)
-                                    {
-                                        currentBeatIndicator.MakeYellow();
-                                    }
-                                    beatStep++;
-                                }
-                                return;
-                            }
-                        case 3:
-                            {
-                                if (timerBeat >= (60f / bpm * 0.85f) || (timerBeat >= ((60f/bpm) - 0.333)))
-                                {
-                                    player.EnterPortalAnimation();
-                                    beatStep++;
-                                }
-                                return;
-                            }
-                        case 4:
-                            {
-                                if (timerBeat >= (60f / bpm) && !hasMissedClick)
-                                {
-                                    // Teleporta o player
-                                    player.gameObject.transform.position = portalPosition;
-                                    RestartBeat();
-                                }
-
-                                return;
-                            }
-                    }                    
                 }
             }
         }
@@ -265,8 +201,8 @@ public class GameController : MonoBehaviour
         portalPosition = new Vector2(x, y);
 
         currentPortal = Instantiate(portalPrefab, portalPosition, Quaternion.identity);
-        currentBeatIndicator = currentPortal.GetComponent<PortalController>().visualBeatIndicator;
-        currentBeatIndicator.bpm = bpm;
+        currentPortal.GetComponent<PlatformBeatController>().bpm = bpm;
+        currentPortal.transform.Find("VisualBeatIndicator").GetComponent<VisualBeatIndicatorController>().bpm = bpm;
     }
 
     void DestroyPortal()
@@ -285,8 +221,6 @@ public class GameController : MonoBehaviour
 
         // Reiniciar beat
         timerBeat = 0;
-        beatStep = 0;
-        canHitTheBeat = false;
         hasMissedClick = false;
 
         // Destruir portal
@@ -296,7 +230,6 @@ public class GameController : MonoBehaviour
     void IsFalling()
     {
         isGameRunning = false;
-        canHitTheBeat = false;
         cameraFollow.SetFalling(true);
         audioBGM.Stop();
         audioRewindSFX.Play();
@@ -363,44 +296,34 @@ public class GameController : MonoBehaviour
     #endregion
 
     #region "Platform"
-    
 
-    void GeneratePlatform(Vector2 touchPosition)
+    public void HasMatchedClick()
     {
-        if (isGameRunning && canSpawnPlatform)
+        if (isFirstPlatform)
         {
-            if (canHitTheBeat)
-            {
-                if (isFirstPlatform)
-                {
-                    isFirstPlatform = false;
-                    audioBGM.Play();
-                }
+            isFirstPlatform = false;
+            audioBGM.Play();
+        }
 
-                Vector3 clickOnWorld = Camera.main.ScreenToWorldPoint(touchPosition);
-                Instantiate(listNextPlatforms[0], new Vector3(clickOnWorld.x, clickOnWorld.y, 0), Quaternion.identity);
+        listNextPlatforms[0] = listNextPlatforms[1];
+        listNextPlatforms[1] = listPlatformsPrefab[Random.Range(0, listPlatformsPrefab.Length)];
 
-                listNextPlatforms[0] = listNextPlatforms[1];
-                listNextPlatforms[1] = listPlatformsPrefab[Random.Range(0, listPlatformsPrefab.Length)];
+        UpdateImagesPlatform();
 
-                UpdateImagesPlatform();
+        canSpawnPlatform = false;
+    }
 
-                canSpawnPlatform = false;
-            }
-            else
-            {
-                Instantiate(sfxPrefabError);
-                currentBeatIndicator.MakeRed();
-                hasMissedClick = true;
+    public void HasMissedClick()
+    {
+        hasMissedClick = true;
 
-                // Para o caso do player errar a primeira plataforma                
-                if (player.isTouchingGround)
-                {
-                    player.gameObject.transform.position = portalPosition;
-                }
-            }    
+        // Para o caso do player errar a primeira plataforma                
+        if (player.isTouchingGround)
+        {
+            player.gameObject.transform.position = portalPosition;
         }
     }
+
     #endregion
 
     #region "Verify Clicks and Touchs"
@@ -430,14 +353,12 @@ public class GameController : MonoBehaviour
 
             if (isClicked)
             {
-                GeneratePlatform(touchPosition);
-
                 RaycastHit2D[] hits = Physics2D.RaycastAll(Camera.main.ScreenToWorldPoint(touchPosition), Vector2.zero);
                 foreach (RaycastHit2D hit in hits)
                 {
                     if (hit.collider != null)
                     {
-                        if (hit.collider.CompareTag("PlatformBeat"))
+                        if (hit.collider.CompareTag("Portal"))
                         {
                             hit.collider.gameObject.GetComponent<PlatformBeatController>().OnTouched(touchPosition);
                         }

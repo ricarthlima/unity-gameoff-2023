@@ -99,8 +99,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bpm: 60
-  isOnRightTime: 0
-  isPassedTime: 0
   beat: {fileID: 2895449344861091455}
   portalSprite: {fileID: 4233540716220579747}
   isRunning: 1
@@ -153,12 +151,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcd829ed92782c4449a4118202bb0387, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeEarly: 0
-  timeOK: 0
-  timeNice: 0
-  timePerfect: 0
-  timeLate: 0
-  timeCount: 0
+  bpm: 0
+  timerBeat: 0
+  textFailPrefab: {fileID: 4632297300078922084, guid: a9d249502ff3199459f7345b9f87503d, type: 3}
+  textOKPrefab: {fileID: 7165533485624536448, guid: c1bd5b05ec734174f94f8c241fdebc07, type: 3}
+  textNicePrefab: {fileID: 3218089599421841951, guid: 306b14a2d1f03744db4136bf9cf1307c, type: 3}
+  textPerfectPrefab: {fileID: 752204403898711218, guid: 25c161c39475a9d4fa625d0caf0a1074, type: 3}
+  currentBeatIndicator: {fileID: 6886121494497069497}
+  sfxError: {fileID: 2771780158704067711, guid: 39033ec2dc8bbc14b8249fafb884a6a5, type: 3}
 --- !u!114 &6895348184472930750
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -6,8 +6,6 @@ using UnityEngine;
 public class VisualBeatIndicatorController : MonoBehaviour
 {
     public float bpm;
-    public bool isOnRightTime;
-    public bool isPassedTime;
 
     [SerializeField] private GameObject beat;
     [SerializeField] private GameObject portalSprite;
