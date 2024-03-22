@@ -71,6 +71,8 @@ public class GameController : MonoBehaviour
     #region "Life Cycles"
     void Start()
     {
+        //Application.targetFrameRate = 60;
+
         portalPosition = player.transform.position;
 
         // Open MainMenu 
@@ -87,20 +89,25 @@ public class GameController : MonoBehaviour
 
     private void Update()
     {
+        VerifyMouseClick();
+        timerBeat += Time.deltaTime;
+        UpdateUI();
+    }
+
+    private void FixedUpdate()
+    {
         CycleVerifyNextScene();
         if (isStartGame)
         {
             bool isWaiting = CycleToRestartGame();
-            UpdateUI();
 
             if (isGameRunning && !isWaiting)
-            {                
-                VerifyMouseClick();
+            {       
 
                 bool isFalling = CycleTestFalling();
                 if (!isFalling)
                 {
-                    timerBeat += Time.deltaTime;      
+                    //timerBeat += Time.deltaTime;      
                     
                     if (timerBeat >= (60f / bpm))
                     {
@@ -293,8 +300,9 @@ public class GameController : MonoBehaviour
             maxHeightTraveled = heightTraveled;
         }
 
+        float fps = 1f / Time.deltaTime;
         textBPM.text = "BPM: " + bpm.ToString();
-        textHeightTraveled.text = "Max Height: " + maxHeightTraveled.ToString("F2") + "m\nHeight: " + heightTraveled.ToString("F2")+"m";
+        textHeightTraveled.text = "Altura Máxima: " + maxHeightTraveled.ToString("F2") + "m\nAltura: " + heightTraveled.ToString("F2")+"m\nFPS: " + fps.ToString("F2");
     }
 
     void UpdateImagesPlatform()

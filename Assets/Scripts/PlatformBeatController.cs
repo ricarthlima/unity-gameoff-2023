@@ -7,7 +7,8 @@ public class PlatformBeatController : MonoBehaviour
     [Header("Timers")]
     public float bpm;
 
-    [SerializeField] private float timerBeat;
+    private float timeStarted;
+    [SerializeField] private float timePassed;
 
     [Header("BeatTexts")]
     [SerializeField] GameObject textFailPrefab;
@@ -33,14 +34,23 @@ public class PlatformBeatController : MonoBehaviour
         gameController = GameObject.Find("GameController").GetComponent<GameController>();
     }
 
-    void Update()
+    private void Start()
     {
-        timerBeat += Time.deltaTime;
+        timeStarted = Time.time;
+    }
+
+    private void Update()
+    {
+        timePassed = Time.time - timeStarted;
+    }
+
+    void FixedUpdate()
+    {        
         switch (beatStep)
         {
             case 0:
                 {
-                    if (timerBeat > ((60f / bpm) * 0.45f) && !gameController.hasMissedClick)
+                    if (timePassed > timeEarly() && !gameController.hasMissedClick)
                     {
                         currentBeatIndicator.ShowPortal();
                         beatStep++;
@@ -49,7 +59,7 @@ public class PlatformBeatController : MonoBehaviour
                 }
             case 1:
                 {
-                    if (timerBeat > timeEarly() && !gameController.hasMissedClick)
+                    if (timePassed > timeOK() && !gameController.hasMissedClick)
                     {
                         // Libera clique correto
                         canHitTheBeat = true;
@@ -62,7 +72,7 @@ public class PlatformBeatController : MonoBehaviour
                 }
             case 2:
                 {
-                    if (timerBeat > bpmTime())
+                    if (timePassed > timeLate())
                     {
                         currentBeatIndicator.MakeRed();
                         canHitTheBeat = false;
@@ -70,7 +80,7 @@ public class PlatformBeatController : MonoBehaviour
                     return;
                 }
         }
-        if (timerBeat > timeLate())
+        if (timePassed > timeDie())
         {
             Destroy(gameObject);
         }
@@ -80,26 +90,26 @@ public class PlatformBeatController : MonoBehaviour
     {
         Vector3 clickOnWorld = Camera.main.ScreenToWorldPoint(touchPosition);
 
-        if (timerBeat < timeEarly())
+        if (timePassed < timeOK())
         {
             Instantiate(textFailPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
         }
-        else if (timerBeat < timeOK())
+        else if (timePassed < timeNice())
         {
             Instantiate(textOKPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
             sizeMultiplier = 0.70f;
         }
-        else if (timerBeat < timeNice())
+        else if (timePassed < timePerfect())
         {
             Instantiate(textNicePrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
             sizeMultiplier = 1;
         }
-        else if (timerBeat < timePerfect())
+        else if (timePassed < timeLate())
         {
             Instantiate(textPerfectPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
             sizeMultiplier = 1.30f;
         }
-        else if (timerBeat > bpmTime())
+        else if (timePassed > timeLate())
         {
             Instantiate(textFailPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
             
@@ -134,17 +144,17 @@ public class PlatformBeatController : MonoBehaviour
 
     float timeEarly()
     {
-        return (bpmTime() * 0.65f);
+        return (bpmTime() * 0.45f);
     }
 
     float timeOK()
     {
-        return (bpmTime() * 0.75f);
+        return (bpmTime() * 0.65f);
     }
 
     float timeNice()
     {
-        return (bpmTime() * 0.85f);
+        return (bpmTime() * 0.75f);
     }
 
     float timePerfect()
@@ -153,6 +163,11 @@ public class PlatformBeatController : MonoBehaviour
     }
 
     float timeLate()
+    {
+        return (bpmTime() * 1.1f);
+    }
+
+    float timeDie()
     {
         return (bpmTime() * 1.25f);
     }
