@@ -15,6 +15,7 @@ public class GameController : MonoBehaviour
     [Header("SceneObjects")]
     public SmoothCameraFollow cameraFollow;
     public PlayerController player;
+    [SerializeField] private GameObject loopBackgroundDungeon;
 
     [Header("UI")]
     [SerializeField] Canvas renderCanvas;
@@ -63,6 +64,8 @@ public class GameController : MonoBehaviour
 
     public bool hasMissedClick = false;
 
+    Vector2 lastBackgroundPosition = new Vector2(0, 20f);
+
     // Levels
     
     #region "Life Cycles"
@@ -102,6 +105,12 @@ public class GameController : MonoBehaviour
                     if (timerBeat >= (60f / bpm))
                     {
                         player.gameObject.transform.position = portalPosition;
+                        if (player.transform.position.y > lastBackgroundPosition.y - 25)
+                        {
+                            lastBackgroundPosition = new Vector2(lastBackgroundPosition.x, lastBackgroundPosition.y + 25);
+                            GameObject newBackground = Instantiate(loopBackgroundDungeon, lastBackgroundPosition, Quaternion.identity);
+                            newBackground.transform.parent = GameObject.Find("Background").transform;
+                        }
                         GeneratePortal();
 
                         timerBeat = 0;
