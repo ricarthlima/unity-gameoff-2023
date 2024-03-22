@@ -373,4 +373,12 @@ public class GameController : MonoBehaviour
 
     }
     #endregion
+
+    #region "Game"
+    public void QuitGame()
+    {
+        Application.Quit();
+        Debug.Log("QUIT");
+    }
+    #endregion
 }
