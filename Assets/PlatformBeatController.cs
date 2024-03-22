@@ -26,6 +26,7 @@ public class PlatformBeatController : MonoBehaviour
 
     int beatStep = 0;
     bool canHitTheBeat = false;
+    float sizeMultiplier = 0.75f;
 
     private void Awake()
     {
@@ -54,10 +55,7 @@ public class PlatformBeatController : MonoBehaviour
                         canHitTheBeat = true;
 
                         // Indicador fica amaerelo
-                        if (currentBeatIndicator != null)
-                        {
-                            currentBeatIndicator.MakeYellow();
-                        }
+                        currentBeatIndicator.MakeYellow();
                         beatStep++;
                     }
                     return;
@@ -89,24 +87,25 @@ public class PlatformBeatController : MonoBehaviour
         else if (timerBeat < timeOK())
         {
             Instantiate(textOKPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
-            GeneratePlatform(touchPosition);
-            
+            sizeMultiplier = 0.70f;
         }
         else if (timerBeat < timeNice())
         {
             Instantiate(textNicePrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
-            GeneratePlatform(touchPosition);
+            sizeMultiplier = 1;
         }
         else if (timerBeat < timePerfect())
         {
             Instantiate(textPerfectPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
-            GeneratePlatform(touchPosition);
+            sizeMultiplier = 1.30f;
         }
-        else
+        else if (timerBeat > bpmTime())
         {
             Instantiate(textFailPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
-            GeneratePlatform(touchPosition);
+            
         }
+
+        GeneratePlatform(touchPosition);
     }
 
 
@@ -115,7 +114,8 @@ public class PlatformBeatController : MonoBehaviour
         if (canHitTheBeat)
         {
             Vector3 clickOnWorld = Camera.main.ScreenToWorldPoint(touchPosition);
-            Instantiate(gameController.listNextPlatforms[0], new Vector3(clickOnWorld.x, clickOnWorld.y, 0), Quaternion.identity);
+            GameObject platform = Instantiate(gameController.listNextPlatforms[0], new Vector3(clickOnWorld.x, clickOnWorld.y, 0), Quaternion.identity);
+            platform.transform.localScale = platform.transform.localScale * sizeMultiplier;
             currentBeatIndicator.gameObject.SetActive(false);
             gameController.HasMatchedClick();
         }
@@ -134,22 +134,22 @@ public class PlatformBeatController : MonoBehaviour
 
     float timeEarly()
     {
-        return (bpmTime() * 0.55f);
+        return (bpmTime() * 0.65f);
     }
 
     float timeOK()
     {
-        return (bpmTime() * 0.65f);
+        return (bpmTime() * 0.75f);
     }
 
     float timeNice()
     {
-        return (bpmTime() * 0.75f);
+        return (bpmTime() * 0.85f);
     }
 
     float timePerfect()
     {
-        return (bpmTime() * 0.85f);
+        return (bpmTime() * 0.95f);
     }
 
     float timeLate()

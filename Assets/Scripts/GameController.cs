@@ -325,12 +325,7 @@ public class GameController : MonoBehaviour
     public void HasMissedClick()
     {
         hasMissedClick = true;
-
-        // Para o caso do player errar a primeira plataforma                
-        if (player.isTouchingGround)
-        {
-            player.gameObject.transform.position = portalPosition;
-        }
+        player.gameObject.transform.position = portalPosition;
     }
 
     #endregion
