@@ -24,6 +24,9 @@ public class PlatformBeatController : MonoBehaviour
 
     [Header("SFX")]
     [SerializeField] private GameObject sfxError;
+    [SerializeField] private GameObject sfxClap;
+    [SerializeField] private GameObject sfxBeat;
+    [SerializeField] private GameObject sfxPerfect;
 
     int beatStep = 0;
     bool canHitTheBeat = false;
@@ -126,6 +129,11 @@ public class PlatformBeatController : MonoBehaviour
             GameObject platform = Instantiate(gameController.listNextPlatforms[0], new Vector3(clickOnWorld.x, clickOnWorld.y, 0), Quaternion.identity);
             platform.transform.localScale = platform.transform.localScale * sizeMultiplier;
             currentBeatIndicator.gameObject.SetActive(false);
+            if (timePassed >= timePerfect())
+            {
+                Instantiate(sfxPerfect);                
+            }
+            //Instantiate(sfxClap);
             gameController.HasMatchedClick();
         }
         else

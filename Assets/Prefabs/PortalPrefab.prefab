@@ -159,6 +159,9 @@ MonoBehaviour:
   textPerfectPrefab: {fileID: 752204403898711218, guid: 25c161c39475a9d4fa625d0caf0a1074, type: 3}
   currentBeatIndicator: {fileID: 6886121494497069497}
   sfxError: {fileID: 2771780158704067711, guid: 39033ec2dc8bbc14b8249fafb884a6a5, type: 3}
+  sfxClap: {fileID: 4917230232648666951, guid: 66eeb80a3c2b1f84eab6ae292d8bb850, type: 3}
+  sfxBeat: {fileID: 6340889525873192267, guid: 9820fc4e78b57934589c4000a74a9300, type: 3}
+  sfxPerfect: {fileID: 3481721413947531133, guid: 8d85ff656ebeb3240a5aa196082c17ae, type: 3}
 --- !u!114 &6895348184472930750
 MonoBehaviour:
   m_ObjectHideFlags: 0
