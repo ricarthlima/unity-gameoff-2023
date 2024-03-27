@@ -9,6 +9,9 @@ public class PlayerController : MonoBehaviour
     public bool isTouchingGround;
     public bool isWalkingToCenter;
 
+    public GameObject leftCover;
+    public GameObject rightCover;
+
     Animator animator;
 
     float startWalkCenterTime;
@@ -22,6 +25,8 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         CycleWalkToCenter();
+        leftCover.transform.position = new Vector2(leftCover.transform.position.x, transform.position.y);
+        rightCover.transform.position = new Vector2(rightCover.transform.position.x, transform.position.y);
     }
 
     public void EnterPortalAnimation()
@@ -49,6 +54,8 @@ public class PlayerController : MonoBehaviour
             if (gameController.isWaitingTimeToRestart  && transform.position.x != 0)
             {                
                 transform.position = Vector3.Lerp(startPositionCenter, new Vector3(0, transform.position.y, transform.position.z), percentageComplete);
+                leftCover.transform.position = Vector2.Lerp(new Vector2(-12f, transform.position.y), new Vector2(-6f, transform.position.y), percentageComplete);
+                rightCover.transform.position = Vector2.Lerp(new Vector2(12f, transform.position.y), new Vector2(6f, transform.position.y), percentageComplete);
             }
             else
             {

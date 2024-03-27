@@ -68,6 +68,9 @@ public class GameController : MonoBehaviour
     Vector2 lastBackgroundPosition = new Vector2(0, 20f);
 
     bool isStartToPlayMusic = false;
+
+    [SerializeField] private GameObject leftCover;
+    [SerializeField] private GameObject rightCover;
     #endregion
 
     #region "Life Cycles"
@@ -94,6 +97,7 @@ public class GameController : MonoBehaviour
     private void Update()
     {
         VerifyMouseClick();
+        CycleControlCover();
         timerBeat += Time.deltaTime;
         UpdateUI();
     }
@@ -218,6 +222,15 @@ public class GameController : MonoBehaviour
                 }
         }
     }
+
+    void CycleControlCover()
+    {
+        if (!isWaitingTimeToRestart)
+        {
+            leftCover.transform.position = Vector3.MoveTowards(leftCover.transform.position, new Vector3(-6f - maxSpawnX, leftCover.transform.position.x), Time.deltaTime*5);
+            rightCover.transform.position = Vector3.MoveTowards(rightCover.transform.position, new Vector3(6f + maxSpawnX, rightCover.transform.position.x), Time.deltaTime*5);
+        }
+    }
     #endregion
 
     #region "Game Logic"
@@ -280,6 +293,7 @@ public class GameController : MonoBehaviour
     void Restart()
     {
         timePassed = 0;
+        maxSpawnX = 0;
         portalPosition = player.transform.position;
         isGameRunning = true;
         isFirstPlatform = true;
