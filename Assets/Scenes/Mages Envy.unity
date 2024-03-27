@@ -193,8 +193,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bpm: 30
-  maxSpawnX: 2
-  waitSecondsToRestart: 2
   level: 0
   cameraFollow: {fileID: 519420033}
   player: {fileID: 897785323}
@@ -220,6 +218,7 @@ MonoBehaviour:
   - {fileID: 1568444981645813013, guid: 89601c5f89b1ec142bbf183310f8aa19, type: 3}
   - {fileID: 1568444981645813013, guid: e530f3154dbe92d4b8267881a1800fac, type: 3}
   listNextPlatforms: []
+  isWaitingTimeToRestart: 0
   hasMissedClick: 0
 --- !u!4 &137176481
 Transform:
@@ -4318,7 +4317,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8354821827748195305, guid: 329934e9a7b2a314bb8ad39560d18cf4, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -4.165
+      value: -4.8
       objectReference: {fileID: 0}
     - target: {fileID: 8354821827748195305, guid: 329934e9a7b2a314bb8ad39560d18cf4, type: 3}
       propertyPath: m_LocalPosition.y

@@ -27,7 +27,7 @@ public class PlatformBeatController : MonoBehaviour
 
     int beatStep = 0;
     bool canHitTheBeat = false;
-    float sizeMultiplier = 0.75f;
+    float sizeMultiplier = 1;
 
     private void Awake()
     {
@@ -97,7 +97,6 @@ public class PlatformBeatController : MonoBehaviour
         else if (timePassed < timeNice())
         {
             Instantiate(textOKPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
-            sizeMultiplier = 0.70f;
         }
         else if (timePassed < timePerfect())
         {

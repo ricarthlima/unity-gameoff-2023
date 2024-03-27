@@ -6,10 +6,10 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
+    #region "Atributes"
     [Header("Controllers")]
     public float bpm;
-    [SerializeField] private float maxSpawnX;    
-    [SerializeField] float waitSecondsToRestart;
+    private float maxSpawnX = 0;    
     public int level = 0;
 
     [Header("SceneObjects")]
@@ -47,15 +47,16 @@ public class GameController : MonoBehaviour
     bool isFirstPlatform = true;
 
     GameObject currentPortal;
-    
+
 
     // Infos
     float maxHeightTraveled = 0;
     float heightTraveled = 0;
 
     // Esperar para recomeçar
-    bool isWaitingTimeToRestart = false;
+    public bool isWaitingTimeToRestart = false;
     float countTimeToRestart = 0;
+    float waitSecondsToRestart = 11;
 
     // Spawn da Plafatorma
     bool canSpawnPlatform = false;
@@ -66,8 +67,9 @@ public class GameController : MonoBehaviour
 
     Vector2 lastBackgroundPosition = new Vector2(0, 20f);
 
-    // Levels
-    
+    bool isStartToPlayMusic = false;
+    #endregion
+
     #region "Life Cycles"
     void Start()
     {
@@ -85,6 +87,8 @@ public class GameController : MonoBehaviour
 
         UpdateImagesPlatform();
         CallScene();
+
+        waitSecondsToRestart -= 60f / bpm;
     }
 
     private void Update()
@@ -97,6 +101,7 @@ public class GameController : MonoBehaviour
     private void FixedUpdate()
     {
         CycleVerifyNextScene();
+        CycleUniqueSceneEvents();
         if (isStartGame)
         {
             bool isWaiting = CycleToRestartGame();
@@ -127,11 +132,17 @@ public class GameController : MonoBehaviour
             }
         }
     }
-
+    
     bool CycleToRestartGame()
     {
         if (isWaitingTimeToRestart)
-        {
+        {            
+            if (!isStartToPlayMusic)
+            {
+                audioBGM.Play();
+                player.WalkToCenter();
+                isStartToPlayMusic = true;
+            }
             countTimeToRestart += Time.deltaTime;
             if (countTimeToRestart > waitSecondsToRestart)
             {
@@ -153,23 +164,6 @@ public class GameController : MonoBehaviour
             return true;
         }
         return false;
-    }
-    
-    public void StartGame()
-    {
-        panelMainMenu.SetActive(false);
-        panelGameHUD.SetActive(true);
-        isGameRunning = true;
-        isStartGame = true;
-        Time.timeScale = 1;
-        Restart();
-    }
-    
-    public void PauseGame()
-    {
-        panelMainMenu.SetActive(true);
-        panelGameHUD.SetActive(false);
-        Time.timeScale = 0;
     }
     
     void CycleVerifyNextScene()
@@ -205,14 +199,34 @@ public class GameController : MonoBehaviour
 
         }
     }
-
+    
+    void CycleUniqueSceneEvents()
+    {
+        switch (level)
+        {
+            case 0:
+                {
+                    break;
+                }
+            case 1:
+                {
+                    break;
+                }
+            case 2:
+                {
+                    break;
+                }
+        }
+    }
     #endregion
 
     #region "Game Logic"
     void GeneratePortal()
     {
-        float y = player.gameObject.transform.position.y + Random.Range(1.5f, 5f);
-        float x = Random.Range(-1*maxSpawnX, maxSpawnX);
+        maxSpawnX += 0.05f;
+        maxSpawnX = Mathf.Min(maxSpawnX, 5);
+        float y = player.gameObject.transform.position.y + 3f;
+        float x = Random.Range(-1 * maxSpawnX, maxSpawnX);
 
         portalPosition = new Vector2(x, y);
 
@@ -269,6 +283,7 @@ public class GameController : MonoBehaviour
         portalPosition = player.transform.position;
         isGameRunning = true;
         isFirstPlatform = true;
+        isStartToPlayMusic = false;
     }
 
     public void TouchedTheGround()
@@ -280,7 +295,7 @@ public class GameController : MonoBehaviour
             player.transform.localEulerAngles = Vector3.zero;
         }
         cameraFollow.SetFalling(false);
-        isWaitingTimeToRestart = true;
+        isWaitingTimeToRestart = true;        
     }
 
     #endregion
@@ -319,7 +334,6 @@ public class GameController : MonoBehaviour
         if (isFirstPlatform)
         {
             isFirstPlatform = false;
-            audioBGM.Play();
         }
 
         listNextPlatforms[0] = listNextPlatforms[1];
@@ -383,6 +397,23 @@ public class GameController : MonoBehaviour
     #endregion
 
     #region "Game"
+    public void StartGame()
+    {
+        panelMainMenu.SetActive(false);
+        panelGameHUD.SetActive(true);
+        isGameRunning = true;
+        isStartGame = true;
+        Time.timeScale = 1;
+        Restart();
+    }
+
+    public void PauseGame()
+    {
+        panelMainMenu.SetActive(true);
+        panelGameHUD.SetActive(false);
+        Time.timeScale = 0;
+    }
+
     public void QuitGame()
     {
         Application.Quit();
