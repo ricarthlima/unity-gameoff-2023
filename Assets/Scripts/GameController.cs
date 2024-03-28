@@ -54,6 +54,7 @@ public class GameController : MonoBehaviour
     // Infos
     float maxHeightTraveled = 0;
     float heightTraveled = 0;
+    float countTimePlaying = 0;
 
     // Esperar para recomeçar
     public bool isWaitingTimeToRestart = false;
@@ -113,10 +114,9 @@ public class GameController : MonoBehaviour
         if (isStartGame)
         {
             bool isWaiting = CycleToRestartGame();
-
+            countTimePlaying += Time.deltaTime;
             if (isGameRunning && !isWaiting)
-            {       
-
+            {                
                 bool isFalling = CycleTestFalling();
                 if (!isFalling)
                 {
@@ -352,7 +352,7 @@ public class GameController : MonoBehaviour
 
         float fps = 1f / Time.deltaTime;
         textBPM.text = "BPM: " + bpm.ToString();
-        textHeightTraveled.text = "Altura Máxima: " + maxHeightTraveled.ToString("F2") + "m\nAltura: " + heightTraveled.ToString("F2")+"m\nFPS: " + fps.ToString("F2");
+        textHeightTraveled.text = "Altura Máxima: " + maxHeightTraveled.ToString("F2") + "m\nAltura: " + heightTraveled.ToString("F2") + "m\nTempo jogando: " +  countTimePlaying.ToString("F0")  +"\nFPS: " + fps.ToString("F2"); 
     }
 
     void UpdateImagesPlatform()
