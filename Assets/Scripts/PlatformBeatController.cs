@@ -135,6 +135,9 @@ public class PlatformBeatController : MonoBehaviour
             }
             //Instantiate(sfxClap);
             gameController.HasMatchedClick();
+            GetComponent<SelfDestroyController>().isStoped = false;
+            GetComponent<SelfDestroyController>().timeToDestroy = 1;
+            
         }
         else
         {

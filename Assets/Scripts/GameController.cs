@@ -16,6 +16,7 @@ public class GameController : MonoBehaviour
     public SmoothCameraFollow cameraFollow;
     public PlayerController player;
     [SerializeField] private GameObject loopBackgroundDungeon;
+    [SerializeField] private GameObject guidePlataform;
 
     [Header("UI")]
     [SerializeField] Canvas renderCanvas;
@@ -25,6 +26,7 @@ public class GameController : MonoBehaviour
     [SerializeField] TextMeshProUGUI textBPM;
     [SerializeField] private Image imageNextPlatform;
     [SerializeField] private Image imageSecondPlatform;
+    [SerializeField] private GameObject textPause;
 
     [Header("BGM and SFX")]
     [SerializeField] private AudioSource audioBGM;
@@ -98,6 +100,8 @@ public class GameController : MonoBehaviour
     {
         VerifyMouseClick();
         CycleControlCover();
+        CycleGuideFollowsMouse();
+        CycleEscButton();
         timerBeat += Time.deltaTime;
         UpdateUI();
     }
@@ -231,6 +235,23 @@ public class GameController : MonoBehaviour
             rightCover.transform.position = Vector3.MoveTowards(rightCover.transform.position, new Vector3(6f + maxSpawnX, rightCover.transform.position.x), Time.deltaTime*5);
         }
     }
+    void CycleGuideFollowsMouse()
+    {
+        if (isGameRunning)
+        {
+            guidePlataform.SetActive(true);
+            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mousePosition.z = 1;
+            guidePlataform.transform.position = mousePosition;
+            Cursor.visible = false;
+        }
+        else
+        {
+            guidePlataform.SetActive(false);
+            Cursor.visible = true;
+        }
+    }
+
     #endregion
 
     #region "Game Logic"
@@ -338,6 +359,8 @@ public class GameController : MonoBehaviour
     {
         imageNextPlatform.sprite = listNextPlatforms[0].GetComponent<SpriteRenderer>().sprite;
         imageSecondPlatform.sprite = listNextPlatforms[1].GetComponent<SpriteRenderer>().sprite;
+        guidePlataform.GetComponent<SpriteRenderer>().sprite = imageNextPlatform.sprite;
+        guidePlataform.transform.localScale = listNextPlatforms[0].transform.localScale;
     }
     #endregion
 
@@ -366,7 +389,16 @@ public class GameController : MonoBehaviour
 
     #endregion
 
-    #region "Verify Clicks and Touchs"
+    #region "Controls"
+    void CycleEscButton()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            PauseGame();
+        }
+    } 
+
+
     void VerifyMouseClick()
     {
         if (isGameRunning)
@@ -423,9 +455,25 @@ public class GameController : MonoBehaviour
 
     public void PauseGame()
     {
-        panelMainMenu.SetActive(true);
-        panelGameHUD.SetActive(false);
-        Time.timeScale = 0;
+        if (isGameRunning)
+        {
+            isGameRunning = false;
+            panelMainMenu.SetActive(true);
+            panelGameHUD.SetActive(false);
+            Time.timeScale = 0;            
+            audioBGM.Pause();
+            textPause.SetActive(true);
+        }
+        else
+        {
+            isGameRunning = true;
+            panelMainMenu.SetActive(false);
+            panelGameHUD.SetActive(true);
+            Time.timeScale = 1;
+            audioBGM.UnPause();
+            textPause.SetActive(false);
+        }
+        
     }
 
     public void QuitGame()
