@@ -7,8 +7,8 @@ TagManager:
   - StartPlatform
   - Platform
   - Portal
-  - PlattformBeat
   - PlatformBeat
+  - StairwayPlatform
   layers:
   - Default
   - TransparentFX

@@ -12,11 +12,23 @@ public class GameController : MonoBehaviour
     private float maxSpawnX = 0;    
     public int level = 0;
 
-    [Header("SceneObjects")]
+    [Header("Scene Objects")]
     public SmoothCameraFollow cameraFollow;
     public PlayerController player;
-    [SerializeField] private GameObject loopBackgroundDungeon;
     [SerializeField] private GameObject guidePlataform;
+
+    [Header("Background Objects")]
+    [SerializeField] private GameObject bgDungeonLoop; 
+    readonly float verticalLoopDistanceDungeon = 25;
+    [SerializeField] private GameObject bgStairwayStart;
+    [SerializeField] private GameObject bgStairwayLoop;
+    readonly float verticalLoopDistanceStairway = 12.92f;
+    float platformStairwayPosition;
+
+    GameObject currentLoopBackground;
+    float currentVerticalDistanceLoopBackground;
+
+    
 
     [Header("UI")]
     [SerializeField] Canvas renderCanvas;
@@ -56,7 +68,7 @@ public class GameController : MonoBehaviour
     float heightTraveled = 0;
     float countTimePlaying = 0;
 
-    // Esperar para recomeçar
+    // Esperar para recomeï¿½ar
     public bool isWaitingTimeToRestart = false;
     float countTimeToRestart = 0;
     float waitSecondsToRestart = 11;
@@ -74,13 +86,16 @@ public class GameController : MonoBehaviour
 
     [SerializeField] private GameObject leftCover;
     [SerializeField] private GameObject rightCover;
+
+    bool isCutScene = false;
+
+    
     #endregion
 
     #region "Life Cycles"
     void Start()
     {
         //Application.targetFrameRate = 60;
-
         portalPosition = player.transform.position;
 
         // Open MainMenu 
@@ -95,6 +110,9 @@ public class GameController : MonoBehaviour
         CallScene();
 
         waitSecondsToRestart -= 60f / bpm;
+
+        currentLoopBackground = bgDungeonLoop;
+        currentVerticalDistanceLoopBackground = verticalLoopDistanceDungeon;
     }
 
     private void Update()
@@ -105,13 +123,19 @@ public class GameController : MonoBehaviour
         CycleEscButton();
         timerBeat += Time.deltaTime;
         UpdateUI();
+
+        //TODO: DEV TOOLS
+        if (Input.GetKeyDown(KeyCode.Alpha2)){
+            audioBGM.time = audioBGM.clip.length - 11;
+            maxSpawnX = 5;
+        }
     }
 
     private void FixedUpdate()
     {
         CycleVerifyNextScene();
         CycleUniqueSceneEvents();
-        if (isStartGame)
+        if (isStartGame && !isCutScene)
         {
             bool isWaiting = CycleToRestartGame();
             countTimePlaying += Time.deltaTime;
@@ -125,12 +149,13 @@ public class GameController : MonoBehaviour
                     if (timerBeat >= (60f / bpm))
                     {
                         player.gameObject.transform.position = portalPosition;
-                        if (player.transform.position.y > lastBackgroundPosition.y - 25)
+                        if (player.transform.position.y > lastBackgroundPosition.y - currentVerticalDistanceLoopBackground)
                         {
-                            lastBackgroundPosition = new Vector2(lastBackgroundPosition.x, lastBackgroundPosition.y + 25);
-                            GameObject newBackground = Instantiate(loopBackgroundDungeon, lastBackgroundPosition, Quaternion.identity);
+                            lastBackgroundPosition = new Vector2(lastBackgroundPosition.x, lastBackgroundPosition.y + currentVerticalDistanceLoopBackground);
+                            GameObject newBackground = Instantiate(currentLoopBackground, lastBackgroundPosition, Quaternion.identity);
                             newBackground.transform.parent = GameObject.Find("Background").transform;
                         }
+
                         GeneratePortal();
 
                         timerBeat = 0;
@@ -174,32 +199,41 @@ public class GameController : MonoBehaviour
         return false;
     }
     
+    bool isTransitionTime = false;
     void CycleVerifyNextScene()
     {
-        if (audioBGM.time >= (listBGMS[level].length - 2))
+        if (audioBGM.time >= listBGMS[level].length - 10)
         {
-            if (level < listBGMS.Count - 1)
+            if (level < listBGMS.Count - 1 && !isTransitionTime)
             {
                 level++;
-                audioBGM.Stop();
+                isTransitionTime = true;
                 CallScene();
             }
-        }
+        }        
     }
 
     void CallScene()
-    {
-        audioBGM.clip = listBGMS[level];
-        bpm = listBPMS[level];
-
+    {        
         if (level == 0)
         {
-            
+            currentLoopBackground = bgDungeonLoop;
+            currentVerticalDistanceLoopBackground = verticalLoopDistanceDungeon;
         }
 
         if (level == 1)
-        {
+        {         
+            currentVerticalDistanceLoopBackground = verticalLoopDistanceStairway;
 
+            GameObject startStairway = Instantiate(bgStairwayStart, lastBackgroundPosition, Quaternion.identity);
+            platformStairwayPosition = startStairway.transform.position.y - 5;
+            startStairway.transform.parent = GameObject.Find("Background").transform;
+
+            lastBackgroundPosition = new Vector2(lastBackgroundPosition.x, lastBackgroundPosition.y + currentVerticalDistanceLoopBackground);
+            GameObject loopStairway = Instantiate(bgStairwayLoop, lastBackgroundPosition, Quaternion.identity);
+            loopStairway.transform.parent = GameObject.Find("Background").transform;
+
+            currentLoopBackground = loopStairway;
         }
 
         if (level == 2)
@@ -208,6 +242,7 @@ public class GameController : MonoBehaviour
         }
     }
     
+    bool hasCallStairwayCutScene = false;
     void CycleUniqueSceneEvents()
     {
         switch (level)
@@ -218,6 +253,24 @@ public class GameController : MonoBehaviour
                 }
             case 1:
                 {
+                    if (player.transform.position.y > platformStairwayPosition){
+                        if (!hasCallStairwayCutScene){
+                            isCutScene = true;
+                        
+                            GameObject[] platforms = GameObject.FindGameObjectsWithTag("Platform");
+                            foreach (GameObject platform in platforms){
+                                Destroy(platform);
+                            }
+
+                            GameObject[] portals = GameObject.FindGameObjectsWithTag("Portal");
+                            foreach (GameObject portal in portals){
+                                Destroy(portal);
+                            }
+                            TouchedStairwayPlatform();
+                            hasCallStairwayCutScene = true;
+                        }
+                        
+                    }
                     break;
                 }
             case 2:
@@ -296,6 +349,7 @@ public class GameController : MonoBehaviour
         isGameRunning = false;
         cameraFollow.SetFalling(true);
         audioBGM.Stop();
+        audioBGM.time = 0;
         audioRewindSFX.Play();
 
         GameObject[] listPortalsRemaining = GameObject.FindGameObjectsWithTag("Portal");
@@ -331,6 +385,29 @@ public class GameController : MonoBehaviour
         }
         cameraFollow.SetFalling(false);
         isWaitingTimeToRestart = true;        
+
+        
+    }
+
+    public void TouchedStairwayPlatform(){
+        audioRewindSFX.Stop();
+        if (player.gameObject.transform.rotation.z != 0)
+        {
+            Vector3 position = player.transform.position;
+            player.transform.localEulerAngles = Vector3.zero;
+        }
+        cameraFollow.SetFalling(false);
+        CutSceneStairway();
+    }
+
+    void CutSceneStairway(){        
+        audioBGM.Stop();
+        isTransitionTime = false;
+        isCutScene = false;
+        audioBGM.time = 0;
+        audioBGM.clip = listBGMS[1];
+        bpm = listBPMS[1];
+        audioBGM.Play();
     }
 
     #endregion
@@ -352,7 +429,7 @@ public class GameController : MonoBehaviour
 
         float fps = 1f / Time.deltaTime;
         textBPM.text = "BPM: " + bpm.ToString();
-        textHeightTraveled.text = "Altura Máxima: " + maxHeightTraveled.ToString("F2") + "m\nAltura: " + heightTraveled.ToString("F2") + "m\nTempo jogando: " +  countTimePlaying.ToString("F0")  +"\nFPS: " + fps.ToString("F2"); 
+        textHeightTraveled.text = "Altura Mï¿½xima: " + maxHeightTraveled.ToString("F2") + "m\nAltura: " + heightTraveled.ToString("F2") + "m\nTempo jogando: " +  countTimePlaying.ToString("F0")  +"\nFPS: " + fps.ToString("F2"); 
     }
 
     void UpdateImagesPlatform()

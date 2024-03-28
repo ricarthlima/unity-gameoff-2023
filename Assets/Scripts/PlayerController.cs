@@ -40,7 +40,7 @@ public class PlayerController : MonoBehaviour
         isWalkingToCenter = true;
         startWalkCenterTime = Time.time;
         startPositionCenter = transform.position;
-        //TODO: Iniciar animação de andar
+        //TODO: Iniciar animaï¿½ï¿½o de andar
     }
 
     void CycleWalkToCenter()
@@ -50,7 +50,7 @@ public class PlayerController : MonoBehaviour
             float timeSinceStarted = Time.time - startWalkCenterTime;
             float percentageComplete = Mathf.Clamp(timeSinceStarted / 9, 0f, 1f);
 
-            print("START: " + startWalkCenterTime + " | TIME: " + Time.time + " | SINCE: " + timeSinceStarted + " | %: " + percentageComplete);
+            //print("START: " + startWalkCenterTime + " | TIME: " + Time.time + " | SINCE: " + timeSinceStarted + " | %: " + percentageComplete);
             if (gameController.isWaitingTimeToRestart  && transform.position.x != 0)
             {                
                 transform.position = Vector3.Lerp(startPositionCenter, new Vector3(0, transform.position.y, transform.position.z), percentageComplete);
@@ -60,7 +60,7 @@ public class PlayerController : MonoBehaviour
             else
             {
                 isWalkingToCenter = false;
-                //TODO: Parar animação de andar
+                //TODO: Parar animaï¿½ï¿½o de andar
             }
         }
     }
@@ -71,6 +71,16 @@ public class PlayerController : MonoBehaviour
         {
             gameController.TouchedTheGround();
             isTouchingGround = true;
+        }
+
+        
+    }
+
+    private void OnCollisionEnter2D(Collision2D other) {
+        if (other != null & other.gameObject.CompareTag("StairwayPlatform"))
+        {
+            print("TOCOU!");
+            gameController.TouchedStairwayPlatform();
         }
     }
 
