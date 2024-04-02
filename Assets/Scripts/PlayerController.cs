@@ -51,7 +51,7 @@ public class PlayerController : MonoBehaviour
             float percentageComplete = Mathf.Clamp(timeSinceStarted / 9, 0f, 1f);
 
             //print("START: " + startWalkCenterTime + " | TIME: " + Time.time + " | SINCE: " + timeSinceStarted + " | %: " + percentageComplete);
-            if (gameController.isWaitingTimeToRestart  && transform.position.x != 0)
+            if (transform.position.x != 0)
             {                
                 transform.position = Vector3.Lerp(startPositionCenter, new Vector3(0, transform.position.y, transform.position.z), percentageComplete);
                 leftCover.transform.position = Vector2.Lerp(new Vector2(-12f, transform.position.y), new Vector2(-6f, transform.position.y), percentageComplete);
@@ -65,32 +65,26 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision!= null & collision.CompareTag("StartPlatform"))
-        {
-            gameController.TouchedTheGround();
-            isTouchingGround = true;
-        }
-
-        
-    }
-
     private void OnCollisionEnter2D(Collision2D other) {
-        if (other != null & other.gameObject.CompareTag("StairwayPlatform"))
+        if (other != null)
         {
-            print("TOCOU!");
-            gameController.TouchedStairwayPlatform();
-        }
+            if (other.gameObject.CompareTag("StartPlatform")){
+                gameController.TouchedGround(TowerLevel.dungeon);   
+            }
+
+            if (other.gameObject.CompareTag("StairwayPlatform")){
+                gameController.TouchedGround(TowerLevel.stairway);
+            }            
+        }  
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
         if (collision != null)
         {
-            if (collision.gameObject.CompareTag("StartPlatform"))
+            if (collision.gameObject.CompareTag("StartPlatform") || collision.gameObject.CompareTag("StairwayPlatform"))
             {
-                isTouchingGround = false;
+                gameController.ExitedGround();
             }
         }
     }

@@ -56,5 +56,6 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Mages Envy.sln"
+    "dotnet.defaultSolution": "Mages Envy.sln",
+    "git.decorations.enabled": false
 }
