@@ -45,18 +45,18 @@ public class PlatformBeatController : MonoBehaviour
     bool devHasGenerated = false;
     private void Update()
     {
-        timePassed = Time.time - timeStarted;
+        timePassed = Time.time - timeStarted;        
+    }
 
+    void FixedUpdate()
+    {       
         if (gameController.devIsAutoGeneratingPlatforms && !devHasGenerated){
-            if (timePassed > timeNice()){
+            if (timePassed > timePerfect()){
                 OnTouched(transform.position - new Vector3(0, 1.25f, 0), false);
                 devHasGenerated = true;
             }
         }
-    }
 
-    void FixedUpdate()
-    {        
         switch (beatStep)
         {
             case 0:
@@ -149,7 +149,8 @@ public class PlatformBeatController : MonoBehaviour
             currentBeatIndicator.gameObject.SetActive(false);
             if (timePassed >= timePerfect())
             {
-                Instantiate(sfxPerfect);                
+                //TODO
+                //Instantiate(sfxPerfect);                
             }
             //Instantiate(sfxClap);
             gameController.HasMatchedClick();

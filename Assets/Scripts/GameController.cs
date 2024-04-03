@@ -75,7 +75,7 @@ public class GameController : MonoBehaviour
 
     // Cutscenes
     bool needToShowFirstCutsceneDungeon = true;
-    bool needToShowStairwayCutscene = true;
+    bool needToShowStairwayCutscene = false;
 
     bool isPlayerFalling = false;
     bool hasStartedToFall = false; 
@@ -115,8 +115,12 @@ public class GameController : MonoBehaviour
         CycleGuideFollowsMouse();
         CycleEscButton();
         CycleTestFalling();
-        timerBeat += Time.deltaTime;
         UpdateUI();
+
+        timerBeat += Time.deltaTime;
+        if (!isGamePaused){
+            countTimePlaying += Time.deltaTime;
+        }
 
         //TODO: DEV TOOLS
         if (Input.GetKeyDown(KeyCode.F1)){
@@ -135,7 +139,7 @@ public class GameController : MonoBehaviour
                 devTimeScale -= 0.25f;
             }
             
-            devTimeScale %= 5;
+            devTimeScale %= 6;
             devTimeScale = Mathf.Max(devTimeScale, 0);
 
             changeScale = true;
@@ -143,7 +147,7 @@ public class GameController : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.F3)){
             devTimeScale += 1f;
-            devTimeScale %= 5;
+            devTimeScale %= 6;
             devTimeScale = Mathf.Floor(devTimeScale);
             changeScale = true;            
         }
@@ -175,8 +179,9 @@ public class GameController : MonoBehaviour
                     StartCoroutine(WaitCutsceneFirstDungeon());
                     needToShowFirstCutsceneDungeon = false;
                 }
+                
                 if (needToShowStairwayCutscene){
-                    //TODO: Cutscene da escadaria
+                    StartCoroutine(WaitCutsceneStairway());
                     needToShowStairwayCutscene = false;
                 }
             }
@@ -205,12 +210,20 @@ public class GameController : MonoBehaviour
     }
     
     IEnumerator WaitCutsceneFirstDungeon(){
-        needToShowFirstCutsceneDungeon = false;
         player.WalkToCenter();
-        SetScene(TowerLevel.dungeon);
+        audioController.PlayDungeon();
         yield return new WaitForSeconds(timeAwaintingDungeonFloor);
         portalPosition = player.transform.position;
         isGameInCutscene = false;        
+    }
+
+    IEnumerator WaitCutsceneStairway(){
+        CleanPortalsAndPlatforms();
+        beatCount = 0;        
+        audioController.PlayStairway();    
+        yield return new WaitForSeconds(8.5f);
+        portalPosition = player.transform.position;             
+        isGameInCutscene = false;               
     }
 
     void CycleTestFalling()
@@ -233,9 +246,11 @@ public class GameController : MonoBehaviour
                         backgroundLoopController.SetStairwayStart();
                         return;
                     }
+                    if (beatCount == 104){
+                        backgroundLoopController.SetStairwayLoop();
+                    }
                     if (beatCount == 110){
-                        isGameInCutscene = true;
-                        needToShowStairwayCutscene = true;
+                        StartScene(TowerLevel.stairway);
                     }
                     break;
                 }
@@ -291,23 +306,23 @@ public class GameController : MonoBehaviour
 
     #region "Game Logic"
 
-    void SetScene(TowerLevel scene){
+    void StartScene(TowerLevel scene){
         isGameInCutscene = true;
 
         if (scene == TowerLevel.dungeon){            
             needToShowFirstCutsceneDungeon = true;
-            bpm = audioController.PlayDungeon();
+            bpm = audioController.bpmDungeon;
             return;
         }
 
         if (scene == TowerLevel.stairway){  
             needToShowStairwayCutscene = true;
-            bpm = audioController.PlayStairway();
+            bpm = audioController.bpmStairway;
             return;
         }
 
         if (scene == TowerLevel.throne){
-            bpm = audioController.PlayThrone();
+            bpm = audioController.bpmThrone;
             return;
         }
     }
@@ -365,16 +380,17 @@ public class GameController : MonoBehaviour
 
     
 
-    public void TouchedGround(TowerLevel level)
+    public void TouchedGround(TowerLevel paramLevel)
     {
-        print("Tocou o chão em " + level);
+        print("Tocou o chão em " + paramLevel);
+        level = paramLevel;
+
         hasStartedToFall = false;
         if (!isGamePaused && !isGameInCutscene && !hasTouchedGround){
             StabilizePlayerAndCamera(); 
-
-            beatCount = 0; 
-            hasTouchedGround = true;      
-            SetScene(level); 
+            beatCount = 0;                        
+            StartScene(level);  
+            hasTouchedGround = true;            
         }        
     }  
 

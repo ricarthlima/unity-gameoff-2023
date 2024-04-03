@@ -12,15 +12,15 @@ public class AudioController : MonoBehaviour
 
     [Header("Dungeon Settings")]
     [SerializeField] private AudioClip bgmDungeon;
-    [SerializeField] private float bpmDungeon;
+    public float bpmDungeon;
 
     [Header("Stairway Settings")]
     [SerializeField] private AudioClip bgmStairway;
-    [SerializeField] private float bpmStairway;
+    public float bpmStairway;
 
     [Header("Throne Settings")]
     [SerializeField] private AudioClip bgmThrone;
-    [SerializeField] private float bpmThrone;
+    public float bpmThrone;
 
     public float PlayDungeon(bool fromTheBegining = true){
         sourceEffectFalling.Stop();
