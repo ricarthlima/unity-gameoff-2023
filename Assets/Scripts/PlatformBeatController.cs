@@ -42,9 +42,17 @@ public class PlatformBeatController : MonoBehaviour
         timeStarted = Time.time;
     }
 
+    bool devHasGenerated = false;
     private void Update()
     {
         timePassed = Time.time - timeStarted;
+
+        if (gameController.devIsAutoGeneratingPlatforms && !devHasGenerated){
+            if (timePassed > timeNice()){
+                OnTouched(transform.position - new Vector3(0, 1.25f, 0), false);
+                devHasGenerated = true;
+            }
+        }
     }
 
     void FixedUpdate()
@@ -87,11 +95,17 @@ public class PlatformBeatController : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        
     }
 
-    public void OnTouched(Vector2 touchPosition)
+    public void OnTouched(Vector2 touchPosition, bool needToConvert = true)
     {
-        Vector3 clickOnWorld = Camera.main.ScreenToWorldPoint(touchPosition);
+        Vector3 clickOnWorld = touchPosition;
+
+        if (needToConvert){
+            clickOnWorld = Camera.main.ScreenToWorldPoint(touchPosition);
+        }        
 
         if (timePassed < timeOK())
         {
@@ -117,15 +131,19 @@ public class PlatformBeatController : MonoBehaviour
             
         }
 
-        GeneratePlatform(touchPosition);
+        GeneratePlatform(touchPosition, needToConvert);
     }
 
 
-    void GeneratePlatform(Vector2 touchPosition)
+    void GeneratePlatform(Vector2 touchPosition, bool needToConvert = true)
     {
         if (canHitTheBeat)
         {
-            Vector3 clickOnWorld = Camera.main.ScreenToWorldPoint(touchPosition);
+            Vector3 clickOnWorld = touchPosition;
+            if (needToConvert){
+                clickOnWorld = Camera.main.ScreenToWorldPoint(touchPosition);
+            }
+
             GameObject platform = Instantiate(gameController.listNextPlatforms[0], new Vector3(clickOnWorld.x, clickOnWorld.y, 0), Quaternion.identity);
             platform.transform.localScale = platform.transform.localScale * sizeMultiplier;
             currentBeatIndicator.gameObject.SetActive(false);

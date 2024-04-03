@@ -48,7 +48,7 @@ public class GameController : MonoBehaviour
 
 
     // Controllers
-    Vector2 portalPosition = Vector2.zero;
+    public Vector2 portalPosition = Vector2.zero;
     public List<GameObject> listNextPlatforms = new List<GameObject>();
 
     GameObject currentPortal;
@@ -78,7 +78,13 @@ public class GameController : MonoBehaviour
     bool needToShowStairwayCutscene = true;
 
     bool isPlayerFalling = false;
-    bool hasStartedToFall = false;    
+    bool hasStartedToFall = false; 
+
+    [Header("DevTools")]
+    [SerializeField] private TextMeshProUGUI textDevAutoGeneratePlatform;
+    [SerializeField] private TextMeshProUGUI textDevGameTimeScale;
+    public bool devIsAutoGeneratingPlatforms = false;   
+    float devTimeScale = 1;
     
     #endregion
 
@@ -113,10 +119,39 @@ public class GameController : MonoBehaviour
         UpdateUI();
 
         //TODO: DEV TOOLS
-        if (Input.GetKeyDown(KeyCode.Alpha2)){
-            audioController.sourceBGM.time = audioController.sourceBGM.clip.length - 13;
-            beatCount = 92;
-            maxSpawnX = 5;
+        if (Input.GetKeyDown(KeyCode.F1)){
+            devIsAutoGeneratingPlatforms = !devIsAutoGeneratingPlatforms;
+            textDevAutoGeneratePlatform.color = devIsAutoGeneratingPlatforms == true ? Color.green : Color.red;
+        }
+
+        bool changeScale = false;
+        if (Input.GetKeyDown(KeyCode.F2)){
+            if (devTimeScale > 1)
+            {
+                devTimeScale -= 1f;                
+            }
+            else
+            {
+                devTimeScale -= 0.25f;
+            }
+            
+            devTimeScale %= 5;
+            devTimeScale = Mathf.Max(devTimeScale, 0);
+
+            changeScale = true;
+        }
+
+        if (Input.GetKeyDown(KeyCode.F3)){
+            devTimeScale += 1f;
+            devTimeScale %= 5;
+            devTimeScale = Mathf.Floor(devTimeScale);
+            changeScale = true;            
+        }
+
+        if (changeScale){
+            Time.timeScale = devTimeScale;
+            audioController.ChangeBGMSpeed(devTimeScale);
+            textDevGameTimeScale.text = "Velocidade do jogo: x" + devTimeScale.ToString("F2");
         }
     }
 
@@ -134,7 +169,8 @@ public class GameController : MonoBehaviour
                     IsFalling();
                 }                
             }
-            else{
+            else
+            {
                 if (needToShowFirstCutsceneDungeon){                    
                     StartCoroutine(WaitCutsceneFirstDungeon());
                     needToShowFirstCutsceneDungeon = false;
@@ -145,7 +181,7 @@ public class GameController : MonoBehaviour
                 }
             }
             
-        }
+        }        
     }
 
     void CycleGeneratePortalsByBeat(){
@@ -193,12 +229,13 @@ public class GameController : MonoBehaviour
         {
             case TowerLevel.dungeon:
                 {
-                    if (beatCount == 97){
+                    if (beatCount == 101){
                         backgroundLoopController.SetStairwayStart();
                         return;
                     }
-                    if (beatCount == 109){
-                         needToShowStairwayCutscene = true;
+                    if (beatCount == 110){
+                        isGameInCutscene = true;
+                        needToShowStairwayCutscene = true;
                     }
                     break;
                 }
@@ -288,6 +325,7 @@ public class GameController : MonoBehaviour
         currentPortal = Instantiate(portalPrefab, portalPosition, Quaternion.identity);
         currentPortal.GetComponent<PlatformBeatController>().bpm = bpm;
         currentPortal.transform.Find("VisualBeatIndicator").GetComponent<VisualBeatIndicatorController>().bpm = bpm;
+
     }
 
     void IsFalling()

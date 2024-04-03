@@ -58,6 +58,10 @@ public class AudioController : MonoBehaviour
         return bpmThrone;
     }
 
+    public void ChangeBGMSpeed(float speed){
+        sourceBGM.pitch = speed;
+    }
+
     #endregion
 
     #region  "SFX"    
