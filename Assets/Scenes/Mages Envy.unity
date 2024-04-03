@@ -193,6 +193,7 @@ MonoBehaviour:
   bpm: 30
   level: 0
   beatCount: 0
+  timeAwaintingDungeonFloor: 9.75
   cameraFollow: {fileID: 519420033}
   player: {fileID: 897785323}
   guidePlataform: {fileID: 1495162017}
@@ -4059,7 +4060,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 345.64, y: -51.820007}
+  m_AnchoredPosition: {x: 345.64, y: -51.82007}
   m_SizeDelta: {x: 691.28, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1968828218

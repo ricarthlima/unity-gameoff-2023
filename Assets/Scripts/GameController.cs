@@ -16,6 +16,8 @@ public class GameController : MonoBehaviour
     public TowerLevel level = TowerLevel.dungeon;
     public int beatCount = 0;
 
+    [SerializeField] private float timeAwaintingDungeonFloor;
+
     [Header("Scene Objects")]
     public SmoothCameraFollow cameraFollow;
     public PlayerController player;
@@ -170,7 +172,7 @@ public class GameController : MonoBehaviour
         needToShowFirstCutsceneDungeon = false;
         player.WalkToCenter();
         SetScene(TowerLevel.dungeon);
-        yield return new WaitForSeconds(11);
+        yield return new WaitForSeconds(timeAwaintingDungeonFloor);
         portalPosition = player.transform.position;
         isGameInCutscene = false;        
     }
