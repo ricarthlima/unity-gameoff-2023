@@ -30,12 +30,21 @@ public class PlayerController : MonoBehaviour
         CycleWalkToCenter();
         leftCover.transform.position = new Vector2(leftCover.transform.position.x, transform.position.y);
         rightCover.transform.position = new Vector2(rightCover.transform.position.x, transform.position.y);
+
+        // if (animator.GetCurrentAnimatorStateInfo(0).IsName("Idle")){
+        //     animator.SetBool("enterPortal", false);
+        //     animator.SetBool("exitPortal", false);
+        // }
     }
 
-    public void EnterPortalAnimation()
+    public void AnimationEnterPortal(bool value = true)
     {
-        animator.SetTrigger("enterPortal");
-        StartCoroutine(ExitPortal());
+        animator.SetBool("enterPortal", value);
+    }
+
+    public void AnimationExitPortal(bool value = true)
+    {
+        animator.SetBool("exitPortal", value);
     }
 
     public void WalkToCenter(float timer)
@@ -47,6 +56,10 @@ public class PlayerController : MonoBehaviour
         //TODO: Iniciar anima��o de andar
     }
 
+    public void ResetToIdle(){
+        transform.Find("Sprite").transform.localScale = Vector3.one;
+        transform.Find("Sprite").GetComponent<SpriteRenderer>().color = Color.white;
+    }
     void CycleWalkToCenter()
     {
         if (isWalkingToCenter)
@@ -91,11 +104,5 @@ public class PlayerController : MonoBehaviour
                 gameController.ExitedGround();
             }
         }
-    }
-
-    IEnumerator ExitPortal()
-    {
-        yield return new WaitForSeconds(0.2f);
-        animator.SetTrigger("exitPortal");
     }
 }

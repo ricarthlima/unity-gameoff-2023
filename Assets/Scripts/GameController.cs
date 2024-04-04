@@ -189,10 +189,27 @@ public class GameController : MonoBehaviour
         }        
     }
 
+    bool hasEnteredInPortal = false;
+    bool hasExitedPortal = false;
     void CycleGeneratePortalsByBeat(){
+        if (timerBeat > 0.3f && !hasExitedPortal){
+            player.AnimationExitPortal(false);
+            hasExitedPortal = true;
+        }
+
+        if (timerBeat >= (60f/bpm) - 0.3f && !hasEnteredInPortal){
+            player.AnimationEnterPortal();
+            hasEnteredInPortal = true;
+        }
+
         if (timerBeat >= (60f / bpm))
-        {
+        {            
+            player.AnimationEnterPortal(false);
             player.gameObject.transform.position = portalPosition;
+            player.AnimationExitPortal();
+            hasEnteredInPortal = false;
+            hasExitedPortal = false;
+
             if (player.transform.position.y > lastBackgroundPosition.y - backgroundLoopVerticalDistance)
             {
                 lastBackgroundPosition = new Vector2(lastBackgroundPosition.x, lastBackgroundPosition.y + backgroundLoopVerticalDistance);
@@ -364,6 +381,9 @@ public class GameController : MonoBehaviour
             hasStartedToFall = true;
             cameraFollow.SetFalling(true);
             audioController.PlayEffectFalling();
+            player.ResetToIdle();
+            player.AnimationEnterPortal(false);
+            player.AnimationExitPortal(false);
 
             CleanPortalsAndPlatforms();
         }
