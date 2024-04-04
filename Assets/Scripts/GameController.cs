@@ -243,7 +243,7 @@ public class GameController : MonoBehaviour
 
     void CycleTestFalling()
     {
-        if (player.rb.velocity.y < -5)
+        if (player.rb.velocity.y < -7)
         {
             isPlayerFalling = true;            
         }else{
@@ -366,17 +366,7 @@ public class GameController : MonoBehaviour
             cameraFollow.SetFalling(true);
             audioController.PlayEffectFalling();
 
-            GameObject[] listPortalsRemaining = GameObject.FindGameObjectsWithTag("Portal");
-
-            foreach (GameObject portal in listPortalsRemaining)
-            {
-                Destroy(portal);
-            }
-            GameObject[] listPlatformRemaining = GameObject.FindGameObjectsWithTag("Portal");
-            foreach (GameObject platform in listPlatformRemaining)
-            {
-                Destroy(platform);
-            }
+            CleanPortalsAndPlatforms();
         }
         
     }
@@ -391,9 +381,7 @@ public class GameController : MonoBehaviour
         cameraFollow.SetFalling(false);
     }
 
-    private bool hasTouchedGround = false;
-
-    
+    private bool hasTouchedGround = false;    
 
     public void TouchedGround(TowerLevel paramLevel)
     {
@@ -405,7 +393,8 @@ public class GameController : MonoBehaviour
             StabilizePlayerAndCamera(); 
             beatCount = 0;                        
             StartScene(level);  
-            hasTouchedGround = true;            
+            hasTouchedGround = true;       
+            hasMissedClick = false;     
         }        
     }  
 

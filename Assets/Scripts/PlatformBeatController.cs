@@ -103,6 +103,7 @@ public class PlatformBeatController : MonoBehaviour
 
     public void OnTouched(Vector2 touchPosition, bool needToConvert = true)
     {
+        print("CLIQUEIIII");
         if (!hasClicked){
             hasClicked = true;
             
