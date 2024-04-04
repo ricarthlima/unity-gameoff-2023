@@ -11,6 +11,11 @@ public class AudioController : MonoBehaviour
         sourceEffectFalling.volume = prefs.SoundSFX;    
     }
 
+    private void Update() {
+        sourceBGM.volume = prefs.SoundBGM;
+        sourceEffectFalling.volume = prefs.SoundSFX;  
+    }
+
     #region  "Music"
     
     [Header("Source Background Music")]

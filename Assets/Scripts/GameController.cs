@@ -12,6 +12,8 @@ public class GameController : MonoBehaviour
     #region "Atributes"
     [Header("Controllers")]
     [SerializeField] PlayerPrefsController prefs;
+    [SerializeField] CanvasController canvasController;
+
     public float bpm;
     private float maxSpawnX = 0;    
     public TowerLevel level = TowerLevel.dungeon;
@@ -32,8 +34,6 @@ public class GameController : MonoBehaviour
 
     [Header("UI")]
     [SerializeField] Canvas renderCanvas;
-    [SerializeField] GameObject panelMainMenu;
-    [SerializeField] GameObject panelGameHUD;
     [SerializeField] TextMeshProUGUI textHeightTraveled;
     [SerializeField] TextMeshProUGUI textBPM;
     [SerializeField] private Image imageNextPlatform;
@@ -94,9 +94,7 @@ public class GameController : MonoBehaviour
         //Application.targetFrameRate = 60;
         portalPosition = player.transform.position;
 
-        // Open MainMenu 
-        panelMainMenu.SetActive(true);
-        panelGameHUD.SetActive(false);
+        
 
         // Platforms
         listNextPlatforms.Add(listPlatformsPrefab[0]);
@@ -265,7 +263,8 @@ public class GameController : MonoBehaviour
                         backgroundLoopController.SetStairwayLoop();
                     }
                     if (beatCount == 110){
-                        StartScene(TowerLevel.stairway);
+                        isGameInCutscene = true;
+                        CleanPortalsAndPlatforms();
                     }
                     break;
                 }
@@ -387,12 +386,12 @@ public class GameController : MonoBehaviour
     {
         print("Tocou o chão em " + paramLevel);
         level = paramLevel;
-
+        
         hasStartedToFall = false;
-        if (!isGamePaused && !isGameInCutscene && !hasTouchedGround){
+        if (!isGamePaused && !hasTouchedGround){                                 
+            StartScene(level); 
             StabilizePlayerAndCamera(); 
-            beatCount = 0;                        
-            StartScene(level);  
+            beatCount = 0;    
             hasTouchedGround = true;       
             hasMissedClick = false;     
         }        
@@ -508,8 +507,8 @@ public class GameController : MonoBehaviour
     #region "Game"
     public void StartGame()
     {
-        panelMainMenu.SetActive(false);
-        panelGameHUD.SetActive(true);
+        canvasController.ShowScene(InternalScenes.hud);
+
         isGamePaused = false;
         Time.timeScale = 1;
     }
@@ -519,8 +518,7 @@ public class GameController : MonoBehaviour
         if (!isGamePaused)
         {
             isGamePaused = true;
-            panelMainMenu.SetActive(true);
-            panelGameHUD.SetActive(false);
+            canvasController.ShowScene(InternalScenes.main);
             Time.timeScale = 0;            
             audioController.PauseEverything();
             textPause.SetActive(true);
@@ -528,8 +526,7 @@ public class GameController : MonoBehaviour
         else
         {
             isGamePaused = false;
-            panelMainMenu.SetActive(false);
-            panelGameHUD.SetActive(true);
+            canvasController.ShowScene(InternalScenes.hud);
             Time.timeScale = 1;
             audioController.UnPauseEverything();
             textPause.SetActive(false);
