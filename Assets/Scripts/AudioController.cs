@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class AudioController : MonoBehaviour
 {
+    [SerializeField] PlayerPrefsController prefs;
+
+    private void Start() {
+        sourceBGM.volume = prefs.SoundBGM;
+        sourceEffectFalling.volume = prefs.SoundSFX;    
+    }
 
     #region  "Music"
     

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -16,6 +17,8 @@ public class PlayerController : MonoBehaviour
 
     float startWalkCenterTime;
     Vector3 startPositionCenter;
+
+    float timeToCenter;
 
     private void Start()
     {
@@ -35,11 +38,12 @@ public class PlayerController : MonoBehaviour
         StartCoroutine(ExitPortal());
     }
 
-    public void WalkToCenter()
+    public void WalkToCenter(float timer)
     {
         isWalkingToCenter = true;
         startWalkCenterTime = Time.time;
         startPositionCenter = transform.position;
+        timeToCenter = timer;
         //TODO: Iniciar anima��o de andar
     }
 
@@ -48,7 +52,7 @@ public class PlayerController : MonoBehaviour
         if (isWalkingToCenter)
         {
             float timeSinceStarted = Time.time - startWalkCenterTime;
-            float percentageComplete = Mathf.Clamp(timeSinceStarted / 9, 0f, 1f);
+            float percentageComplete = Mathf.Clamp(timeSinceStarted / timeToCenter, 0f, 1f);
 
             //print("START: " + startWalkCenterTime + " | TIME: " + Time.time + " | SINCE: " + timeSinceStarted + " | %: " + percentageComplete);
             if (transform.position.x != 0)

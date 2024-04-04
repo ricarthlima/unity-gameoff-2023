@@ -11,6 +11,7 @@ public class GameController : MonoBehaviour
 {
     #region "Atributes"
     [Header("Controllers")]
+    [SerializeField] PlayerPrefsController prefs;
     public float bpm;
     private float maxSpawnX = 0;    
     public TowerLevel level = TowerLevel.dungeon;
@@ -52,7 +53,6 @@ public class GameController : MonoBehaviour
     public List<GameObject> listNextPlatforms = new List<GameObject>();
 
     GameObject currentPortal;
-
 
     // Infos
     float maxHeightTraveled = 0;
@@ -106,6 +106,8 @@ public class GameController : MonoBehaviour
 
         backgroundLoop = Instantiate(backgroundLoopPrefab, new Vector3(-20, 0, 0), Quaternion.identity);
         backgroundLoopController = backgroundLoop.GetComponent<BackgroundLoopController>();
+
+        maxHeightTraveled = prefs.RecHigh;
     }
 
     private void Update()
@@ -210,18 +212,31 @@ public class GameController : MonoBehaviour
     }
     
     IEnumerator WaitCutsceneFirstDungeon(){
-        player.WalkToCenter();
+        maxSpawnX = 0;
+        beatCount = 0;  
+
+        CleanPortalsAndPlatforms();
+
+        player.WalkToCenter(timeAwaintingDungeonFloor);
         audioController.PlayDungeon();
+        
         yield return new WaitForSeconds(timeAwaintingDungeonFloor);
+
         portalPosition = player.transform.position;
         isGameInCutscene = false;        
     }
 
     IEnumerator WaitCutsceneStairway(){
+        maxSpawnX = 0;
+        beatCount = 0;  
+
         CleanPortalsAndPlatforms();
-        beatCount = 0;        
+
+        player.WalkToCenter(8.5f);   
         audioController.PlayStairway();    
+        
         yield return new WaitForSeconds(8.5f);
+
         portalPosition = player.transform.position;             
         isGameInCutscene = false;               
     }
@@ -408,6 +423,7 @@ public class GameController : MonoBehaviour
         if (heightTraveled > maxHeightTraveled)
         {
             maxHeightTraveled = heightTraveled;
+            prefs.RecHigh = maxHeightTraveled;
         }
 
         float fps = 1f / Time.deltaTime;
@@ -464,7 +480,7 @@ public class GameController : MonoBehaviour
             bool isClicked = false;
             Vector2 touchPosition = Vector2.negativeInfinity;
 
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.X))
             {
                 touchPosition = Input.mousePosition;
                 isClicked = true;

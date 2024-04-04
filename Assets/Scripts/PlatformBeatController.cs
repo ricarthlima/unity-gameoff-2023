@@ -32,6 +32,8 @@ public class PlatformBeatController : MonoBehaviour
     bool canHitTheBeat = false;
     float sizeMultiplier = 1;
 
+    bool hasClicked = false;
+
     private void Awake()
     {
         gameController = GameObject.Find("GameController").GetComponent<GameController>();
@@ -101,37 +103,42 @@ public class PlatformBeatController : MonoBehaviour
 
     public void OnTouched(Vector2 touchPosition, bool needToConvert = true)
     {
-        Vector3 clickOnWorld = touchPosition;
-
-        if (needToConvert){
-            clickOnWorld = Camera.main.ScreenToWorldPoint(touchPosition);
-        }        
-
-        if (timePassed < timeOK())
-        {
-            Instantiate(textFailPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
-        }
-        else if (timePassed < timeNice())
-        {
-            Instantiate(textOKPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
-        }
-        else if (timePassed < timePerfect())
-        {
-            Instantiate(textNicePrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
-            sizeMultiplier = 1;
-        }
-        else if (timePassed < timeLate())
-        {
-            Instantiate(textPerfectPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
-            sizeMultiplier = 1.30f;
-        }
-        else if (timePassed > timeLate())
-        {
-            Instantiate(textFailPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
+        if (!hasClicked){
+            hasClicked = true;
             
-        }
+            Vector3 clickOnWorld = touchPosition;
 
-        GeneratePlatform(touchPosition, needToConvert);
+            if (needToConvert){
+                clickOnWorld = Camera.main.ScreenToWorldPoint(touchPosition);
+            }        
+
+            if (timePassed < timeOK())
+            {
+                Instantiate(textFailPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
+            }
+            else if (timePassed < timeNice())
+            {
+                Instantiate(textOKPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
+            }
+            else if (timePassed < timePerfect())
+            {
+                Instantiate(textNicePrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
+                sizeMultiplier = 1;
+            }
+            else if (timePassed < timeLate())
+            {
+                Instantiate(textPerfectPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
+                sizeMultiplier = 1.30f;
+            }
+            else if (timePassed > timeLate())
+            {
+                Instantiate(textFailPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
+                
+            }
+
+            GeneratePlatform(touchPosition, needToConvert);
+        }
+        
     }
 
 
