@@ -12,9 +12,24 @@ public class AudioController : MonoBehaviour
     }
 
     private void Update() {
+        sourceMenu.volume = prefs.SoundBGM;
         sourceBGM.volume = prefs.SoundBGM;
         sourceEffectFalling.volume = prefs.SoundSFX;  
     }
+
+    #region "Menu"
+    [Header("Main Menu")]
+    [SerializeField] private AudioSource sourceMenu;
+
+    public void PlayMenuBGM(){
+        sourceBGM.Pause();
+        sourceEffectFalling.Pause();
+        
+        sourceMenu.time = 0;
+        sourceMenu.Play();
+    }
+
+    #endregion
 
     #region  "Music"
     
@@ -35,6 +50,7 @@ public class AudioController : MonoBehaviour
 
     public float PlayDungeon(bool fromTheBegining = true){
         sourceEffectFalling.Stop();
+        sourceMenu.Stop();
 
         if (fromTheBegining){
             sourceBGM.time = 0;
@@ -47,7 +63,8 @@ public class AudioController : MonoBehaviour
 
     public float PlayStairway(bool fromTheBegining = true){
         sourceEffectFalling.Stop();
-        
+        sourceMenu.Stop();
+
         if (fromTheBegining){
             sourceBGM.time = 0;
         }
@@ -59,7 +76,8 @@ public class AudioController : MonoBehaviour
 
     public float PlayThrone(bool fromTheBegining = true){
         sourceEffectFalling.Stop();
-        
+        sourceMenu.Stop();
+
         if (fromTheBegining){
             sourceBGM.time = 0;
         }
@@ -76,24 +94,50 @@ public class AudioController : MonoBehaviour
     #endregion
 
     #region  "SFX"    
-    [Header("Source Falling")]
+    [Header("Falling")]
     [SerializeField] private AudioSource sourceEffectFalling;
 
     public void PlayEffectFalling(){
+        sourceMenu.Stop();
         sourceBGM.Stop();
         sourceEffectFalling.time = 0;
         sourceEffectFalling.Play();
     }
 
+    [Header("Beat SFXs")]
+    [SerializeField] private GameObject sfxError;
+    [SerializeField] private GameObject sfxClap;
+    [SerializeField] private GameObject sfxBeat;
+    [SerializeField] private GameObject sfxPerfect;
+
+    void EquilizeSFX(GameObject gameObject){
+        gameObject.GetComponent<AudioSource>().volume = prefs.SoundSFX;
+    }
+
+    public void PlaySFXPerfect(){
+        EquilizeSFX(sfxPerfect);
+        Instantiate(sfxPerfect);
+    }
+
+    public void PlaySFXError(){
+        EquilizeSFX(sfxError);
+        Instantiate(sfxError);
+    }
+
+
     #endregion
 
     #region  "Global"
     public void PauseEverything(){
+        sourceMenu.Play();
+
         sourceBGM.Pause();
         sourceEffectFalling.Pause();
     }
 
     public void UnPauseEverything(){
+        sourceMenu.Stop();
+
         sourceBGM.UnPause();
         sourceEffectFalling.UnPause();
     }

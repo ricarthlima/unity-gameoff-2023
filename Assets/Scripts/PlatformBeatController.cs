@@ -21,12 +21,7 @@ public class PlatformBeatController : MonoBehaviour
 
     [Header("Controllers")]
     GameController gameController;
-
-    [Header("SFX")]
-    [SerializeField] private GameObject sfxError;
-    [SerializeField] private GameObject sfxClap;
-    [SerializeField] private GameObject sfxBeat;
-    [SerializeField] private GameObject sfxPerfect;
+    
 
     int beatStep = 0;
     bool canHitTheBeat = false;
@@ -157,7 +152,7 @@ public class PlatformBeatController : MonoBehaviour
             if (timePassed >= timePerfect())
             {
                 //TODO
-                //Instantiate(sfxPerfect);                
+                gameController.audioController.PlaySFXPerfect();                
             }
             //Instantiate(sfxClap);
             gameController.HasMatchedClick();
@@ -167,7 +162,7 @@ public class PlatformBeatController : MonoBehaviour
         }
         else
         {
-            Instantiate(sfxError);
+            gameController.audioController.PlaySFXError();
             currentBeatIndicator.MakeRed();
             gameController.HasMissedClick();
         }

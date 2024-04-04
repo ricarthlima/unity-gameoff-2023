@@ -94,7 +94,7 @@ public class GameController : MonoBehaviour
         //Application.targetFrameRate = 60;
         portalPosition = player.transform.position;
 
-        
+        audioController.PlayMenuBGM();
 
         // Platforms
         listNextPlatforms.Add(listPlatformsPrefab[0]);
