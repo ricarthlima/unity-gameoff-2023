@@ -115,7 +115,7 @@ public class AudioController : MonoBehaviour
     }
 
     public void PlaySFXPerfect(){
-        EquilizeSFX(Instantiate(sfxPerfect));
+        EquilizeSFX(Instantiate(sfxPerfect), 0.75f);
     }
 
     public void PlaySFXError(){

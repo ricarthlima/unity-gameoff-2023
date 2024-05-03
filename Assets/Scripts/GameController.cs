@@ -17,7 +17,7 @@ public class GameController : MonoBehaviour
 
     public float bpm;
     private float maxSpawnX = 0;    
-    private readonly float maxSpawnY = 5;
+    private readonly float maxSpawnY = 4;
     public TowerLevel level = TowerLevel.dungeon;
     public int beatCount = 0;
 

@@ -529,7 +529,8 @@ MonoBehaviour:
   listPlatformsPrefab:
   - {fileID: 1568444981645813013, guid: 15e37dcf865001e46b65e142373b10d4, type: 3}
   - {fileID: 1568444981645813013, guid: 89601c5f89b1ec142bbf183310f8aa19, type: 3}
-  - {fileID: 1568444981645813013, guid: e530f3154dbe92d4b8267881a1800fac, type: 3}
+  - {fileID: 1568444981645813013, guid: dc6239f91ae208048878e7db2064c327, type: 3}
+  - {fileID: 1568444981645813013, guid: 897faa21f2929a441976d89a760f845c, type: 3}
   portalPosition: {x: 0, y: 0}
   listNextPlatforms: []
   hasMissedClick: 0
@@ -865,7 +866,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Vers\xE3o de Desenvolvimento - v0.0.12"
+  m_text: "Vers\xE3o de Desenvolvimento - v0.0.13"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
