@@ -513,7 +513,7 @@ MonoBehaviour:
   bpm: 60
   level: 0
   beatCount: 0
-  timeAwaintingDungeonFloor: 9.75
+  timeAwaintingDungeonFloor: 10.5
   cameraFollow: {fileID: 519420033}
   player: {fileID: 897785323}
   guidePlataform: {fileID: 1495162017}
