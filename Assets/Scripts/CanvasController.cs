@@ -27,6 +27,8 @@ public class CanvasController : MonoBehaviour
 
     [SerializeField] private Toggle toggleFullscreen;
 
+    [SerializeField] private RectTransform progressMageRect;
+
     bool isFullscreen;
     int selectedRes;
 
@@ -112,6 +114,12 @@ public class CanvasController : MonoBehaviour
 
     public void SetResolution(int index){
         selectedRes = index;
+    }
+
+    public void MoveProgressMage(float progress){
+        Vector3 newPos = progressMageRect.anchoredPosition;
+        newPos.y = -225 + (progress * 450);
+        progressMageRect.anchoredPosition = newPos;
     }
 
 }

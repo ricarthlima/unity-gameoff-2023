@@ -207,7 +207,7 @@ public class GameController : MonoBehaviour
         if (timerBeat >= (60f / bpm))
         {            
             player.AnimationEnterPortal(false);
-            player.gameObject.transform.position = portalPosition;
+            player.transform.position = portalPosition;
             player.AnimationExitPortal();
             hasEnteredInPortal = false;
             hasExitedPortal = false;
@@ -222,6 +222,8 @@ public class GameController : MonoBehaviour
             GeneratePortal();
 
             timerBeat = 0;
+
+            canvasController.MoveProgressMage(beatCount/105f);
             return;
         }
         
