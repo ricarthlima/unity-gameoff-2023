@@ -12,7 +12,7 @@ public class VisualBeatIndicatorController : MonoBehaviour
 
     private float timeStart;
     private float timePassed;
-    public bool isRunning = true;
+    private readonly int initialBeatScale = 3;
 
     private void Start()
     {
@@ -21,13 +21,13 @@ public class VisualBeatIndicatorController : MonoBehaviour
 
     void Update()
     {
-        float value = 2;
+        timePassed = Time.time - timeStart;
+        float newScale  = (initialBeatScale + 1) - (timePassed / (60f / bpm) * initialBeatScale);
+        beat.transform.localScale = new Vector3(newScale, newScale, newScale); 
 
-        if (isRunning && value >= 1) {
-            timePassed = Time.time - timeStart;
-            value = 2 - timePassed / (60f / bpm);
-            beat.transform.localScale = new Vector3(value, value, value); // Vector3.Lerp(beat.transform.localScale, Vector3.one, timePassed / (60f / bpm));            
-        }
+        float newOpacity = (50f + (timePassed / (60f / bpm) * 200f))/250f;
+        Color oldColor = beat.GetComponent<SpriteRenderer>().color;
+        beat.GetComponent<SpriteRenderer>().color = new Color(oldColor.r, oldColor.g , oldColor.b ,newOpacity);
     }
 
     public void ShowPortal()
@@ -38,11 +38,13 @@ public class VisualBeatIndicatorController : MonoBehaviour
 
     public void MakeYellow()
     {
+        GetComponent<SpriteRenderer>().color = Color.yellow;
         beat.GetComponent<SpriteRenderer>().color = Color.yellow;        
     }
     
     public void MakeRed()
     {
-        beat.GetComponent <SpriteRenderer>().color = Color.red; 
+        GetComponent<SpriteRenderer>().color = Color.red; 
+        beat.GetComponent<SpriteRenderer>().color = Color.red; 
     }
 }
