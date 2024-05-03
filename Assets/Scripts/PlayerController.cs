@@ -20,6 +20,8 @@ public class PlayerController : MonoBehaviour
 
     float timeToCenter;
 
+    public GameObject sprite;
+
     private void Start()
     {
         animator = GetComponent<Animator>();
@@ -31,10 +33,9 @@ public class PlayerController : MonoBehaviour
         leftCover.transform.position = new Vector2(leftCover.transform.position.x, transform.position.y);
         rightCover.transform.position = new Vector2(rightCover.transform.position.x, transform.position.y);
 
-        // if (animator.GetCurrentAnimatorStateInfo(0).IsName("Idle")){
-        //     animator.SetBool("enterPortal", false);
-        //     animator.SetBool("exitPortal", false);
-        // }
+        if (rb.velocity.y < - 50){
+            rb.velocity = new Vector2(rb.velocity.x, -50);
+        }
     }
 
     public void AnimationEnterPortal(bool value = true)
@@ -57,8 +58,11 @@ public class PlayerController : MonoBehaviour
     }
 
     public void ResetToIdle(){
-        transform.Find("Sprite").transform.localScale = Vector3.one;
-        transform.Find("Sprite").GetComponent<SpriteRenderer>().color = Color.white;
+        sprite.transform.localScale = Vector3.one;
+        sprite.GetComponent<SpriteRenderer>().color = Color.white;
+        animator.SetBool("enterPortal", false);
+        animator.SetBool("exitPortal", false);
+        animator.Play("Idle");
     }
     void CycleWalkToCenter()
     {

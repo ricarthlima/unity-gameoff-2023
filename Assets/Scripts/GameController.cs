@@ -261,8 +261,6 @@ public class GameController : MonoBehaviour
         if (player.rb.velocity.y < -7)
         {
             isPlayerFalling = true;            
-        }else{
-            isPlayerFalling = false;
         }
     }
 
@@ -375,17 +373,25 @@ public class GameController : MonoBehaviour
     }
 
     void IsFalling()
-    {
+    {       
+
+        player.ResetToIdle();
         if (!hasStartedToFall)
         {
             hasStartedToFall = true;
             cameraFollow.SetFalling(true);
             audioController.PlayEffectFalling();
             player.ResetToIdle();
-            player.AnimationEnterPortal(false);
-            player.AnimationExitPortal(false);
 
             CleanPortalsAndPlatforms();
+        }
+
+        GameObject platform = GameObject.FindGameObjectWithTag("StartPlatform");
+        float diff = Mathf.Abs(platform.transform.position.y - player.transform.position.y);
+        if (diff < 25 && player.rb.velocity.y < - 25)
+        {
+            player.rb.drag += 25 * Time.deltaTime;
+            player.rb.drag = Mathf.Min(10, player.rb.drag);
         }
         
     }
@@ -394,9 +400,9 @@ public class GameController : MonoBehaviour
     void StabilizePlayerAndCamera(){
         if (player.gameObject.transform.rotation.z != 0)
         {
-            Vector3 position = player.transform.position;
             player.transform.localEulerAngles = Vector3.zero;
         }
+        player.rb.drag = 0.15f; 
         cameraFollow.SetFalling(false);
     }
 
@@ -408,12 +414,14 @@ public class GameController : MonoBehaviour
         level = paramLevel;
         
         hasStartedToFall = false;
-        if (!isGamePaused && !hasTouchedGround){                                 
+        if (!isGamePaused && !hasTouchedGround){   
+            player.ResetToIdle();                             
             StartScene(level); 
             StabilizePlayerAndCamera(); 
             beatCount = 0;    
             hasTouchedGround = true;       
             hasMissedClick = false;     
+            isPlayerFalling = false;
         }        
     }  
 
@@ -527,10 +535,7 @@ public class GameController : MonoBehaviour
     #region "Game"
     public void StartGame()
     {
-        canvasController.ShowScene(InternalScenes.hud);
-
-        isGamePaused = false;
-        Time.timeScale = 1;
+        PauseGame();
     }
 
     public void PauseGame()

@@ -22,8 +22,10 @@ public class CanvasController : MonoBehaviour
     [Header("Game HUD")]
     [SerializeField] private GameObject panelGameHUD;
 
-    Resolution[] resolutions;
+    List<Resolution> resolutions = new List<Resolution>();
     public TMP_Dropdown dropdownResolution;
+
+    [SerializeField] private Toggle toggleFullscreen;
 
     bool isFullscreen;
     int selectedRes;
@@ -32,12 +34,19 @@ public class CanvasController : MonoBehaviour
     {
         ShowScene(InternalScenes.main);
 
-        resolutions = Screen.resolutions;
+        toggleFullscreen.isOn = Screen.fullScreen;
+
+        foreach (Resolution res in Screen.resolutions){
+            if (res.width/res.height == 16/9){
+                resolutions.Add(res);
+            }
+        }
+
         dropdownResolution.ClearOptions();
         
-        int currentResIndex = 0;
+        int currentResIndex = resolutions.Count - 1;
         List<string> ress = new List<string>();
-        for (int i = 0; i < resolutions.Length; i++){
+        for (int i = 0; i < resolutions.Count; i++){
             string option = resolutions[i].width + " x " + resolutions[i].height;
             ress.Add(option);
 

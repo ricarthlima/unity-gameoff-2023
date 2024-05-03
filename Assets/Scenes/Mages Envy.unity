@@ -2218,6 +2218,7 @@ MonoBehaviour:
   sliderSFX: {fileID: 232299306}
   panelGameHUD: {fileID: 1163168305}
   dropdownResolution: {fileID: 1400398487}
+  toggleFullscreen: {fileID: 479547730}
 --- !u!1 &526466719
 GameObject:
   m_ObjectHideFlags: 0
@@ -2769,6 +2770,7 @@ MonoBehaviour:
   isWalkingToCenter: 0
   leftCover: {fileID: 1715656552}
   rightCover: {fileID: 729749116}
+  sprite: {fileID: 1847469114}
 --- !u!4 &897785325
 Transform:
   m_ObjectHideFlags: 0
@@ -3654,8 +3656,8 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 0
-  m_AngularDrag: 0.75
+  m_LinearDrag: 0.15
+  m_AngularDrag: 1.5
   m_GravityScale: 2
   m_Material: {fileID: 6200000, guid: f9d3be5106e0a754db55269e889ff26d, type: 2}
   m_Interpolate: 0
@@ -5873,7 +5875,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -249.1, y: 100.5}
+  m_AnchoredPosition: {x: -249.09998, y: 100.5}
   m_SizeDelta: {x: 400, y: 64}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1732547734
