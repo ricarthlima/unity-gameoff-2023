@@ -151,10 +151,12 @@ public class PlatformBeatController : MonoBehaviour
             currentBeatIndicator.gameObject.SetActive(false);
             if (timePassed >= timePerfect())
             {
-                //TODO
                 gameController.audioController.PlaySFXPerfect();                
             }
-            //Instantiate(sfxClap);
+            else
+            {
+                gameController.audioController.PlaySFXClap();
+            }
             gameController.HasMatchedClick();
             GetComponent<SelfDestroyController>().isStoped = false;
             GetComponent<SelfDestroyController>().timeToDestroy = 1;

@@ -110,21 +110,26 @@ public class AudioController : MonoBehaviour
     [SerializeField] private GameObject sfxBeat;
     [SerializeField] private GameObject sfxPerfect;
 
-    void EquilizeSFX(GameObject gameObject){
-        gameObject.GetComponent<AudioSource>().volume = prefs.SoundSFX;
+    void EquilizeSFX(GameObject gameObject, float modifier = 1){
+        gameObject.GetComponent<AudioSource>().volume = prefs.SoundSFX * modifier;
     }
 
     public void PlaySFXPerfect(){
-        EquilizeSFX(sfxPerfect);
-        Instantiate(sfxPerfect);
+        EquilizeSFX(Instantiate(sfxPerfect));
     }
 
     public void PlaySFXError(){
-        EquilizeSFX(sfxError);
-        Instantiate(sfxError);
+        EquilizeSFX(Instantiate(sfxError));
     }
 
+    public void PlaySFXBeat(){
+        EquilizeSFX( Instantiate(sfxBeat), 0.1f);
+       ;
+    }
 
+    public void PlaySFXClap(){
+        EquilizeSFX(Instantiate(sfxClap), 0.1f);
+    }
     #endregion
 
     #region  "Global"

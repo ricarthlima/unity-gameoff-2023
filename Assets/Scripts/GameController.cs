@@ -464,7 +464,7 @@ public class GameController : MonoBehaviour
     #region "Platform"
 
     public void HasMatchedClick()
-    {
+    {       
         listNextPlatforms[0] = listNextPlatforms[1];
         listNextPlatforms[1] = listPlatformsPrefab[Random.Range(0, listPlatformsPrefab.Length)];
 
@@ -514,7 +514,9 @@ public class GameController : MonoBehaviour
             }
 
             if (isClicked)
-            {
+            {   
+                bool needToBeat = true;
+
                 RaycastHit2D[] hits = Physics2D.RaycastAll(Camera.main.ScreenToWorldPoint(touchPosition), Vector2.zero);
                 foreach (RaycastHit2D hit in hits)
                 {
@@ -523,9 +525,14 @@ public class GameController : MonoBehaviour
                         if (hit.collider.CompareTag("Portal"))
                         {
                             hit.collider.gameObject.GetComponent<PlatformBeatController>().OnTouched(touchPosition);
+                            needToBeat = false;
                         }
-                    }
+                    }                     
                 }
+                if (needToBeat)
+                {
+                    audioController.PlaySFXBeat();
+                }                
             }
         }
 
