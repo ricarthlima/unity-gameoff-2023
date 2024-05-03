@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -16,6 +17,7 @@ public class GameController : MonoBehaviour
 
     public float bpm;
     private float maxSpawnX = 0;    
+    private readonly float maxSpawnY = 5;
     public TowerLevel level = TowerLevel.dungeon;
     public int beatCount = 0;
 
@@ -355,13 +357,17 @@ public class GameController : MonoBehaviour
             return;
         }
     }
+
     void GeneratePortal()
     {
         beatCount += 1;
 
         maxSpawnX += 0.05f;
         maxSpawnX = Mathf.Min(maxSpawnX, 5);
-        float y = player.gameObject.transform.position.y + (backgroundLoopVerticalDistance/4);
+
+        float yRNG = Random.Range(0, maxSpawnY);    
+
+        float y = player.gameObject.transform.position.y + (backgroundLoopVerticalDistance/4) + yRNG;
         float x = Random.Range(-1 * maxSpawnX, maxSpawnX);
 
         portalPosition = new Vector2(x, y);
