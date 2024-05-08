@@ -527,8 +527,7 @@ MonoBehaviour:
   audioController: {fileID: 1048880853}
   portalPrefab: {fileID: 1884389433286179304, guid: 0b86d0769c1e24049b76c6c67d542f40, type: 3}
   listPlatformsPrefab:
-  - {fileID: 1568444981645813013, guid: 15e37dcf865001e46b65e142373b10d4, type: 3}
-  - {fileID: 1568444981645813013, guid: 89601c5f89b1ec142bbf183310f8aa19, type: 3}
+  - {fileID: 1568444981645813013, guid: 0f351ecf0b5b75a40beaad30419b75a2, type: 3}
   - {fileID: 1568444981645813013, guid: dc6239f91ae208048878e7db2064c327, type: 3}
   - {fileID: 1568444981645813013, guid: 897faa21f2929a441976d89a760f845c, type: 3}
   portalPosition: {x: 0, y: 0}
