@@ -1,9 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public enum TowerLevel { dungeon, stairway, throne };
@@ -67,7 +65,8 @@ public class GameController : MonoBehaviour
     float countTimePlaying = 0;
 
     // Spawn da Plafatorma
-    float timerBeat = 0;
+    //float timerBeat = 0;
+    float timeRestarted = 0;
 
     public bool hasMissedClick = false;
 
@@ -90,9 +89,20 @@ public class GameController : MonoBehaviour
     public bool devIsAutoGeneratingPlatforms = false;
     float devTimeScale = 1;
 
+    List<string> listUniqueEventsHappend = new List<string>();
+
     #endregion
 
     #region "Life Cycles"
+    float GetTimerBeat()
+    {
+        return Time.time - timeRestarted;
+    }
+
+    void RestartTimerBeat()
+    {
+        timeRestarted = Time.time;
+    }
     void Start()
     {
         //Application.targetFrameRate = 60;
@@ -123,7 +133,6 @@ public class GameController : MonoBehaviour
         CycleTestFalling();
         UpdateUI();
 
-        timerBeat += Time.deltaTime;
         if (!isGamePaused)
         {
             countTimePlaying += Time.deltaTime;
@@ -174,7 +183,12 @@ public class GameController : MonoBehaviour
     {
         if (!isGamePaused)
         {
-            CycleUniqueSceneEvents();
+            string eventHappend = CycleUniqueSceneEvents();
+            if (eventHappend != null)
+            {
+                listUniqueEventsHappend.Add(eventHappend);
+            }
+
             if (!isGameInCutscene)
             {
                 if (!isPlayerFalling)
@@ -208,19 +222,19 @@ public class GameController : MonoBehaviour
     bool hasExitedPortal = false;
     void CycleGeneratePortalsByBeat()
     {
-        if (timerBeat > 0.3f && !hasExitedPortal)
+        if (GetTimerBeat() > 0.3f && !hasExitedPortal)
         {
             player.AnimationExitPortal(false);
             hasExitedPortal = true;
         }
 
-        if (timerBeat >= (60f / bpm) - 0.3f && !hasEnteredInPortal)
+        if (GetTimerBeat() >= (60f / bpm) - 0.3f && !hasEnteredInPortal)
         {
             player.AnimationEnterPortal();
             hasEnteredInPortal = true;
         }
 
-        if (timerBeat >= (60f / bpm))
+        if (GetTimerBeat() >= (60f / bpm))
         {
             player.AnimationEnterPortal(false);
             player.transform.position = portalPosition;
@@ -235,9 +249,9 @@ public class GameController : MonoBehaviour
                 newBackground.transform.parent = GameObject.Find("Background").transform;
             }
 
-            GeneratePortal();
 
-            timerBeat = 0;
+            GeneratePortal();
+            RestartTimerBeat();
 
             canvasController.MoveProgressMage(beatCount / 105f);
             return;
@@ -290,16 +304,21 @@ public class GameController : MonoBehaviour
         }
     }
 
-    void CycleUniqueSceneEvents()
+    string? CycleUniqueSceneEvents()
     {
         switch (level)
         {
             case TowerLevel.dungeon:
                 {
+                    if (beatCount == 13 && !listUniqueEventsHappend.Contains("MU001"))
+                    {
+                        bpm = 60;
+                        return "MU001";
+                    }
                     if (beatCount == 101)
                     {
                         backgroundLoopController.SetStairwayStart();
-                        return;
+                        return "";
                     }
                     if (beatCount == 104)
                     {
@@ -321,6 +340,7 @@ public class GameController : MonoBehaviour
                     break;
                 }
         }
+        return null;
     }
 
     void CycleGuideFollowsMouse()
@@ -362,24 +382,23 @@ public class GameController : MonoBehaviour
     void StartScene(TowerLevel scene)
     {
         isGameInCutscene = true;
+        bpm = levelData.GetInitialBPM(scene);
 
         if (scene == TowerLevel.dungeon)
         {
             needToShowFirstCutsceneDungeon = true;
-            bpm = audioController.bpmDungeon;
+
             return;
         }
 
         if (scene == TowerLevel.stairway)
         {
             needToShowStairwayCutscene = true;
-            bpm = audioController.bpmStairway;
             return;
         }
 
         if (scene == TowerLevel.throne)
         {
-            bpm = audioController.bpmThrone;
             return;
         }
     }
@@ -409,9 +428,6 @@ public class GameController : MonoBehaviour
 
 
         currentPortal = Instantiate(portalPrefab, portalPosition, Quaternion.identity);
-        currentPortal.GetComponent<PlatformBeatController>().bpm = bpm;
-        currentPortal.transform.Find("VisualBeatIndicator").GetComponent<VisualBeatIndicatorController>().bpm = bpm;
-
     }
 
     void IsFalling()
@@ -453,6 +469,8 @@ public class GameController : MonoBehaviour
 
     public void TouchedGround(TowerLevel paramLevel)
     {
+        listUniqueEventsHappend.Clear();
+
         print("Tocou o chão em " + paramLevel);
         level = paramLevel;
 
@@ -519,6 +537,7 @@ public class GameController : MonoBehaviour
     public void HasMissedClick()
     {
         hasMissedClick = true;
+        player.transform.position = portalPosition;
     }
 
     #endregion

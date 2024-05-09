@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class PlatformBeatController : MonoBehaviour
 {
-    [Header("Timers")]
-    public float bpm;
 
     private float timeStarted;
     [SerializeField] private float timePassed;
@@ -165,7 +163,7 @@ public class PlatformBeatController : MonoBehaviour
 
     float bpmTime()
     {
-        return 60f / bpm;
+        return 60f / gameController.bpm;
     }
 
     float timeEarly()

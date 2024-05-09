@@ -6,25 +6,28 @@ public class AudioController : MonoBehaviour
 {
     [SerializeField] PlayerPrefsController prefs;
 
-    private void Start() {
+    private void Start()
+    {
         sourceBGM.volume = prefs.SoundBGM;
-        sourceEffectFalling.volume = prefs.SoundSFX;    
+        sourceEffectFalling.volume = prefs.SoundSFX;
     }
 
-    private void Update() {
+    private void Update()
+    {
         sourceMenu.volume = prefs.SoundBGM;
         sourceBGM.volume = prefs.SoundBGM;
-        sourceEffectFalling.volume = prefs.SoundSFX;  
+        sourceEffectFalling.volume = prefs.SoundSFX;
     }
 
     #region "Menu"
     [Header("Main Menu")]
     [SerializeField] private AudioSource sourceMenu;
 
-    public void PlayMenuBGM(){
+    public void PlayMenuBGM()
+    {
         sourceBGM.Pause();
         sourceEffectFalling.Pause();
-        
+
         sourceMenu.time = 0;
         sourceMenu.Play();
     }
@@ -32,62 +35,59 @@ public class AudioController : MonoBehaviour
     #endregion
 
     #region  "Music"
-    
+
     [Header("Source Background Music")]
     public AudioSource sourceBGM;
 
     [Header("Dungeon Settings")]
     [SerializeField] private AudioClip bgmDungeon;
-    public float bpmDungeon;
 
     [Header("Stairway Settings")]
     [SerializeField] private AudioClip bgmStairway;
-    public float bpmStairway;
 
     [Header("Throne Settings")]
     [SerializeField] private AudioClip bgmThrone;
-    public float bpmThrone;
-
-    public float PlayDungeon(bool fromTheBegining = true){
+    public void PlayDungeon(bool fromTheBegining = true)
+    {
         sourceEffectFalling.Stop();
         sourceMenu.Stop();
 
-        if (fromTheBegining){
+        if (fromTheBegining)
+        {
             sourceBGM.time = 0;
         }
         sourceBGM.clip = bgmDungeon;
         sourceBGM.Play();
-
-        return bpmDungeon;
     }
 
-    public float PlayStairway(bool fromTheBegining = true){
+    public void PlayStairway(bool fromTheBegining = true)
+    {
         sourceEffectFalling.Stop();
         sourceMenu.Stop();
 
-        if (fromTheBegining){
+        if (fromTheBegining)
+        {
             sourceBGM.time = 0;
         }
         sourceBGM.clip = bgmStairway;
         sourceBGM.Play();
-
-        return bpmStairway;
     }
 
-    public float PlayThrone(bool fromTheBegining = true){
+    public void PlayThrone(bool fromTheBegining = true)
+    {
         sourceEffectFalling.Stop();
         sourceMenu.Stop();
 
-        if (fromTheBegining){
+        if (fromTheBegining)
+        {
             sourceBGM.time = 0;
         }
         sourceBGM.clip = bgmThrone;
         sourceBGM.Play();
-
-        return bpmThrone;
     }
 
-    public void ChangeBGMSpeed(float speed){
+    public void ChangeBGMSpeed(float speed)
+    {
         sourceBGM.pitch = speed;
     }
 
@@ -97,7 +97,8 @@ public class AudioController : MonoBehaviour
     [Header("Falling")]
     [SerializeField] private AudioSource sourceEffectFalling;
 
-    public void PlayEffectFalling(){
+    public void PlayEffectFalling()
+    {
         sourceMenu.Stop();
         sourceBGM.Stop();
         sourceEffectFalling.time = 0;
@@ -110,37 +111,44 @@ public class AudioController : MonoBehaviour
     [SerializeField] private GameObject sfxBeat;
     [SerializeField] private GameObject sfxPerfect;
 
-    void EquilizeSFX(GameObject gameObject, float modifier = 1){
+    void EquilizeSFX(GameObject gameObject, float modifier = 1)
+    {
         gameObject.GetComponent<AudioSource>().volume = prefs.SoundSFX * modifier;
     }
 
-    public void PlaySFXPerfect(){
+    public void PlaySFXPerfect()
+    {
         EquilizeSFX(Instantiate(sfxPerfect), 0.75f);
     }
 
-    public void PlaySFXError(){
+    public void PlaySFXError()
+    {
         EquilizeSFX(Instantiate(sfxError));
     }
 
-    public void PlaySFXBeat(){
-        EquilizeSFX( Instantiate(sfxBeat), 0.1f);
-       ;
+    public void PlaySFXBeat()
+    {
+        EquilizeSFX(Instantiate(sfxBeat), 0.1f);
+        ;
     }
 
-    public void PlaySFXClap(){
+    public void PlaySFXClap()
+    {
         EquilizeSFX(Instantiate(sfxClap), 0.1f);
     }
     #endregion
 
     #region  "Global"
-    public void PauseEverything(){
+    public void PauseEverything()
+    {
         sourceMenu.Play();
 
         sourceBGM.Pause();
         sourceEffectFalling.Pause();
     }
 
-    public void UnPauseEverything(){
+    public void UnPauseEverything()
+    {
         sourceMenu.Stop();
 
         sourceBGM.UnPause();

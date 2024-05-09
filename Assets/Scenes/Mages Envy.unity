@@ -1915,7 +1915,7 @@ AudioSource:
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
-  Loop: 1
+  Loop: 0
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -3641,11 +3641,8 @@ MonoBehaviour:
   sourceMenu: {fileID: 2022477562}
   sourceBGM: {fileID: 295877935}
   bgmDungeon: {fileID: 8300000, guid: 1feb959f3c529eb499fa4959f8a598aa, type: 3}
-  bpmDungeon: 15
   bgmStairway: {fileID: 8300000, guid: d58da7fc7262c4c4f8f2b5878c80234a, type: 3}
-  bpmStairway: 85
   bgmThrone: {fileID: 8300000, guid: 13327b805ccd1884297d78b8a55fce1b, type: 3}
-  bpmThrone: 90
   sourceEffectFalling: {fileID: 489154186}
   sfxError: {fileID: 2771780158704067711, guid: 39033ec2dc8bbc14b8249fafb884a6a5, type: 3}
   sfxClap: {fileID: 4917230232648666951, guid: 66eeb80a3c2b1f84eab6ae292d8bb850, type: 3}

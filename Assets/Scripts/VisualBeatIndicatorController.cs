@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class VisualBeatIndicatorController : MonoBehaviour
 {
-    public float bpm;
+    GameController gameController;
 
     [SerializeField] private GameObject beat;
     [SerializeField] private GameObject portalSprite;
@@ -14,6 +14,10 @@ public class VisualBeatIndicatorController : MonoBehaviour
     private float timePassed;
     private readonly int initialBeatScale = 3;
 
+    private void Awake()
+    {
+        gameController = GameObject.Find("GameController").GetComponent<GameController>();
+    }
     private void Start()
     {
         timeStart = Time.time;
@@ -22,12 +26,12 @@ public class VisualBeatIndicatorController : MonoBehaviour
     void Update()
     {
         timePassed = Time.time - timeStart;
-        float newScale  = (initialBeatScale + 1) - (timePassed / (60f / bpm) * initialBeatScale);
-        beat.transform.localScale = new Vector3(newScale, newScale, newScale); 
+        float newScale = (initialBeatScale + 1) - (timePassed / (60f / gameController.bpm) * initialBeatScale);
+        beat.transform.localScale = new Vector3(newScale, newScale, newScale);
 
-        float newOpacity = (50f + (timePassed / (60f / bpm) * 200f))/250f;
+        float newOpacity = (50f + (timePassed / (60f / gameController.bpm) * 200f)) / 250f;
         Color oldColor = beat.GetComponent<SpriteRenderer>().color;
-        beat.GetComponent<SpriteRenderer>().color = new Color(oldColor.r, oldColor.g , oldColor.b ,newOpacity);
+        beat.GetComponent<SpriteRenderer>().color = new Color(oldColor.r, oldColor.g, oldColor.b, newOpacity);
     }
 
     public void ShowPortal()
@@ -39,12 +43,12 @@ public class VisualBeatIndicatorController : MonoBehaviour
     public void MakeYellow()
     {
         GetComponent<SpriteRenderer>().color = Color.yellow;
-        beat.GetComponent<SpriteRenderer>().color = Color.yellow;        
+        beat.GetComponent<SpriteRenderer>().color = Color.yellow;
     }
-    
+
     public void MakeRed()
     {
-        GetComponent<SpriteRenderer>().color = Color.red; 
-        beat.GetComponent<SpriteRenderer>().color = Color.red; 
+        GetComponent<SpriteRenderer>().color = Color.red;
+        beat.GetComponent<SpriteRenderer>().color = Color.red;
     }
 }
