@@ -2213,6 +2213,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefs: {fileID: 687144669}
   panelMainMenu: {fileID: 1027991273}
+  textVersion: {fileID: 206331756}
   panelSettings: {fileID: 174251788}
   sliderBGM: {fileID: 1848708472}
   sliderSFX: {fileID: 232299306}

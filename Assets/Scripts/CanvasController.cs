@@ -13,6 +13,7 @@ public class CanvasController : MonoBehaviour
 
     [Header("Main Menu")]
     [SerializeField] private GameObject panelMainMenu;
+    [SerializeField] private TextMeshProUGUI textVersion;
 
     [Header("Settings")]
     [SerializeField] private GameObject panelSettings;
@@ -34,6 +35,8 @@ public class CanvasController : MonoBehaviour
 
     void Start()
     {
+        textVersion.text = "Versão de Desenvolvimento - " + Application.version;
+
         ShowScene(InternalScenes.main);
 
         toggleFullscreen.isOn = Screen.fullScreen;
