@@ -10,12 +10,6 @@ public class PlatformBeatController : MonoBehaviour
     private float timeStarted;
     [SerializeField] private float timePassed;
 
-    [Header("BeatTexts")]
-    [SerializeField] GameObject textFailPrefab;
-    [SerializeField] GameObject textOKPrefab;
-    [SerializeField] GameObject textNicePrefab;
-    [SerializeField] GameObject textPerfectPrefab;
-
     [Header("Visual")]
     [SerializeField] VisualBeatIndicatorController currentBeatIndicator;
 
@@ -109,26 +103,25 @@ public class PlatformBeatController : MonoBehaviour
 
             if (timePassed < timeOK())
             {
-                Instantiate(textFailPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
+                //Instantiate(textFailPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
             }
             else if (timePassed < timeNice())
             {
-                Instantiate(textOKPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
+                //Instantiate(textOKPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
             }
             else if (timePassed < timePerfect())
             {
-                Instantiate(textNicePrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
+                //Instantiate(textNicePrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
                 sizeMultiplier = 1;
             }
             else if (timePassed < timeLate())
             {
-                Instantiate(textPerfectPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
+                //Instantiate(textPerfectPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
                 sizeMultiplier = 1.30f;
             }
             else if (timePassed > timeLate())
             {
-                Instantiate(textFailPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
-                
+                //Instantiate(textFailPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);                
             }
 
             GeneratePlatform(touchPosition, needToConvert);
