@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class SmoothCameraFollow : MonoBehaviour
 {
+    private bool isFollowing;
+    private float speed = 1;
+
     public Transform target;
     [SerializeField] private float damping;
     [SerializeField] private Vector3 offset;
@@ -23,10 +26,15 @@ public class SmoothCameraFollow : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (!isFalling) { 
-        Vector3 movePosistion = target.position + innerOffset;
-        Vector3 damp = Vector3.SmoothDamp(transform.position, movePosistion, ref velocity, innerDamping);
-        transform.position = new Vector3(transform.position.x, damp.y, transform.position.z);
+        if (!isFalling)
+        {
+            if (isFollowing)
+            {
+                Vector3 movePosistion = target.position + innerOffset;
+                Vector3 damp = Vector3.SmoothDamp(transform.position, movePosistion, ref velocity, innerDamping, speed);
+                transform.position = new Vector3(transform.position.x, damp.y, transform.position.z);
+            }
+
         }
         else
         {
@@ -40,15 +48,22 @@ public class SmoothCameraFollow : MonoBehaviour
     public void SetFalling(bool setFalling)
     {
         isFalling = setFalling;
-        //if (setFalling)
-        //{
-        //    innerOffset = Vector3.zero;
-        //    innerDamping = 0.2f;
-        //}
-        //else
-        //{
-        //    innerOffset = offset;
-        //    innerDamping = damping;
-        //}
+    }
+
+    public void SetSlowFollow()
+    {
+        isFollowing = true;
+        speed = 4;
+    }
+
+    public void SetFastFollow()
+    {
+        isFollowing = true;
+        speed = 8;
+    }
+
+    public void StopFollow()
+    {
+        isFollowing = false;
     }
 }

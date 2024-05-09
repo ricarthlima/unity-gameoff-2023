@@ -508,9 +508,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c1e2cda5fb6bec0409cd01da42c82d3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  levelData: {fileID: 1872259917}
   prefs: {fileID: 687144669}
   canvasController: {fileID: 523559802}
   bpm: 60
+  beatsUntilMoveCamera: 3
+  maxSpawnX: 10
+  minSpawnY: 1.25
+  maxSpawnY: 2
   level: 0
   beatCount: 0
   timeAwaintingDungeonFloor: 10.5
@@ -533,8 +538,7 @@ MonoBehaviour:
   portalPosition: {x: 0, y: 0}
   listNextPlatforms: []
   hasMissedClick: 0
-  leftCover: {fileID: 1715656552}
-  rightCover: {fileID: 729749116}
+  isGamePaused: 1
   textDevAutoGeneratePlatform: {fileID: 1760856557}
   textDevGameTimeScale: {fileID: 1498700658}
   devIsAutoGeneratingPlatforms: 0
@@ -1361,6 +1365,8 @@ Transform:
   - {fileID: 1048880854}
   - {fileID: 687144668}
   - {fileID: 523559801}
+  - {fileID: 787270594}
+  - {fileID: 1872259916}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2145,7 +2151,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -1, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2733,7 +2739,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 729749116}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 12, y: 0, z: -100}
+  m_LocalPosition: {x: 5, y: 0, z: -100}
   m_LocalScale: {x: 10, y: 20, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2778,11 +2784,11 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -81175897
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.39215687}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.5882353}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -2792,6 +2798,55 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &787270593
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 787270594}
+  - component: {fileID: 787270595}
+  m_Layer: 0
+  m_Name: CoversController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &787270594
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 787270593}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 311939010}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &787270595
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 787270593}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e450be1fedffb448bfac7232ab99f17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameController: {fileID: 137176480}
+  player: {fileID: 1115922446}
+  leftCover: {fileID: 1715656552}
+  rightCover: {fileID: 729749116}
+  speed: 2
 --- !u!114 &897785323
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2808,8 +2863,6 @@ MonoBehaviour:
   rb: {fileID: 1115922449}
   isTouchingGround: 0
   isWalkingToCenter: 0
-  leftCover: {fileID: 1715656552}
-  rightCover: {fileID: 729749116}
   sprite: {fileID: 1847469114}
 --- !u!4 &897785325
 Transform:
@@ -2820,7 +2873,7 @@ Transform:
   m_GameObject: {fileID: 1115922446}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -4.49, y: -3.27, z: 0}
-  m_LocalScale: {x: 0.2, y: 0.2, z: 1.6}
+  m_LocalScale: {x: 0.1, y: 0.1, z: 0.8}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1847469115}
@@ -3588,7 +3641,7 @@ MonoBehaviour:
   sourceMenu: {fileID: 2022477562}
   sourceBGM: {fileID: 295877935}
   bgmDungeon: {fileID: 8300000, guid: 1feb959f3c529eb499fa4959f8a598aa, type: 3}
-  bpmDungeon: 60
+  bpmDungeon: 15
   bgmStairway: {fileID: 8300000, guid: d58da7fc7262c4c4f8f2b5878c80234a, type: 3}
   bpmStairway: 85
   bgmThrone: {fileID: 8300000, guid: 13327b805ccd1884297d78b8a55fce1b, type: 3}
@@ -3774,7 +3827,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0.15
   m_AngularDrag: 1.5
-  m_GravityScale: 2
+  m_GravityScale: 1
   m_Material: {fileID: 6200000, guid: f9d3be5106e0a754db55269e889ff26d, type: 2}
   m_Interpolate: 0
   m_SleepingMode: 0
@@ -5330,8 +5383,8 @@ Transform:
   m_GameObject: {fileID: 1495162017}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 125686101}
   m_RootOrder: 4
@@ -5374,8 +5427,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1872808593
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: e57ddb2252f77eb4880d88448d176108, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 0.74509805}
@@ -5896,7 +5949,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1715656552}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -12, y: 0, z: -100}
+  m_LocalPosition: {x: -5, y: 0, z: -100}
   m_LocalScale: {x: 10, y: 20, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5941,11 +5994,11 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -81175897
+  m_SortingLayer: 1
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.39215687}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.5882353}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -6833,6 +6886,55 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1868539345}
   m_CullTransparentMesh: 1
+--- !u!1 &1872259915
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1872259916}
+  - component: {fileID: 1872259917}
+  m_Layer: 0
+  m_Name: LevelData
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1872259916
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1872259915}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 311939010}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1872259917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1872259915}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5473d858a547e8b478914555ed04f17d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dungeonInitialBPM: 30
+  dungeonInitialHorizontalRange: 3
+  dungeonMaxHorizontalRange: 7
+  stairwayInitialBPM: 60
+  throneInitialBPM: 80
 --- !u!1 &1876027751
 GameObject:
   m_ObjectHideFlags: 0

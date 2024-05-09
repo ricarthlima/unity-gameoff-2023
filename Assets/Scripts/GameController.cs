@@ -6,18 +6,23 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public enum TowerLevel {dungeon, stairway, throne};
+public enum TowerLevel { dungeon, stairway, throne };
 
 public class GameController : MonoBehaviour
 {
     #region "Atributes"
+    [Header("Levels Data")]
+    [SerializeField] LevelData levelData;
+
     [Header("Controllers")]
     [SerializeField] PlayerPrefsController prefs;
     [SerializeField] CanvasController canvasController;
 
     public float bpm;
-    private float maxSpawnX = 0;    
-    private readonly float maxSpawnY = 1;
+    [SerializeField] private int beatsUntilMoveCamera;
+    public float maxSpawnX;
+    [SerializeField] private float minSpawnY;
+    [SerializeField] private float maxSpawnY;
     public TowerLevel level = TowerLevel.dungeon;
     public int beatCount = 0;
 
@@ -29,8 +34,8 @@ public class GameController : MonoBehaviour
     [SerializeField] private GameObject guidePlataform;
 
     [Header("Background Objects")]
-    [SerializeField] private GameObject backgroundLoopPrefab; 
-    private GameObject backgroundLoop;   
+    [SerializeField] private GameObject backgroundLoopPrefab;
+    private GameObject backgroundLoop;
     private BackgroundLoopController backgroundLoopController;
     readonly float backgroundLoopVerticalDistance = 12.4f;
 
@@ -68,11 +73,8 @@ public class GameController : MonoBehaviour
 
     Vector2 lastBackgroundPosition = new Vector2(0, 14.77f);
 
-    [SerializeField] private GameObject leftCover;
-    [SerializeField] private GameObject rightCover;
-
     // New game controllers
-    bool isGamePaused = true;
+    public bool isGamePaused = true;
     bool isGameInCutscene = true; // Começos de fase são cutscene, cutscenes são cutscenes, queda é cutscene
 
     // Cutscenes
@@ -80,14 +82,14 @@ public class GameController : MonoBehaviour
     bool needToShowStairwayCutscene = false;
 
     bool isPlayerFalling = false;
-    bool hasStartedToFall = false; 
+    bool hasStartedToFall = false;
 
     [Header("DevTools")]
     [SerializeField] private TextMeshProUGUI textDevAutoGeneratePlatform;
     [SerializeField] private TextMeshProUGUI textDevGameTimeScale;
-    public bool devIsAutoGeneratingPlatforms = false;   
+    public bool devIsAutoGeneratingPlatforms = false;
     float devTimeScale = 1;
-    
+
     #endregion
 
     #region "Life Cycles"
@@ -108,53 +110,60 @@ public class GameController : MonoBehaviour
         backgroundLoopController = backgroundLoop.GetComponent<BackgroundLoopController>();
 
         maxHeightTraveled = prefs.RecHigh;
+
+        maxSpawnX = levelData.GetInitialHorizontalRange(level);
+        bpm = levelData.GetInitialBPM(level);
     }
 
     private void Update()
     {
         VerifyMouseClick();
-        CycleControlCover();
         CycleGuideFollowsMouse();
         CycleEscButton();
         CycleTestFalling();
         UpdateUI();
 
         timerBeat += Time.deltaTime;
-        if (!isGamePaused){
+        if (!isGamePaused)
+        {
             countTimePlaying += Time.deltaTime;
         }
 
         //TODO: DEV TOOLS
-        if (Input.GetKeyDown(KeyCode.F1)){
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
             devIsAutoGeneratingPlatforms = !devIsAutoGeneratingPlatforms;
             textDevAutoGeneratePlatform.color = devIsAutoGeneratingPlatforms == true ? Color.green : Color.red;
         }
 
         bool changeScale = false;
-        if (Input.GetKeyDown(KeyCode.F2)){
+        if (Input.GetKeyDown(KeyCode.F2))
+        {
             if (devTimeScale > 1)
             {
-                devTimeScale -= 1f;                
+                devTimeScale -= 1f;
             }
             else
             {
                 devTimeScale -= 0.25f;
             }
-            
+
             devTimeScale %= 6;
             devTimeScale = Mathf.Max(devTimeScale, 0);
 
             changeScale = true;
         }
 
-        if (Input.GetKeyDown(KeyCode.F3)){
+        if (Input.GetKeyDown(KeyCode.F3))
+        {
             devTimeScale += 1f;
             devTimeScale %= 6;
             devTimeScale = Mathf.Floor(devTimeScale);
-            changeScale = true;            
+            changeScale = true;
         }
 
-        if (changeScale){
+        if (changeScale)
+        {
             Time.timeScale = devTimeScale;
             audioController.ChangeBGMSpeed(devTimeScale);
             textDevGameTimeScale.text = "Velocidade do jogo: x" + devTimeScale.ToString("F2");
@@ -162,50 +171,57 @@ public class GameController : MonoBehaviour
     }
 
     private void FixedUpdate()
-    {        
+    {
         if (!isGamePaused)
         {
             CycleUniqueSceneEvents();
-            if (!isGameInCutscene){
+            if (!isGameInCutscene)
+            {
                 if (!isPlayerFalling)
-                {    
-                    CycleGeneratePortalsByBeat();                    
+                {
+                    CycleGeneratePortalsByBeat();
                 }
-                else{
+                else
+                {
                     IsFalling();
-                }                
+                }
             }
             else
             {
-                if (needToShowFirstCutsceneDungeon){                    
+                if (needToShowFirstCutsceneDungeon)
+                {
                     StartCoroutine(WaitCutsceneFirstDungeon());
                     needToShowFirstCutsceneDungeon = false;
                 }
-                
-                if (needToShowStairwayCutscene){
+
+                if (needToShowStairwayCutscene)
+                {
                     StartCoroutine(WaitCutsceneStairway());
                     needToShowStairwayCutscene = false;
                 }
             }
-            
-        }        
+
+        }
     }
 
     bool hasEnteredInPortal = false;
     bool hasExitedPortal = false;
-    void CycleGeneratePortalsByBeat(){
-        if (timerBeat > 0.3f && !hasExitedPortal){
+    void CycleGeneratePortalsByBeat()
+    {
+        if (timerBeat > 0.3f && !hasExitedPortal)
+        {
             player.AnimationExitPortal(false);
             hasExitedPortal = true;
         }
 
-        if (timerBeat >= (60f/bpm) - 0.3f && !hasEnteredInPortal){
+        if (timerBeat >= (60f / bpm) - 0.3f && !hasEnteredInPortal)
+        {
             player.AnimationEnterPortal();
             hasEnteredInPortal = true;
         }
 
         if (timerBeat >= (60f / bpm))
-        {            
+        {
             player.AnimationEnterPortal(false);
             player.transform.position = portalPosition;
             player.AnimationExitPortal();
@@ -223,48 +239,54 @@ public class GameController : MonoBehaviour
 
             timerBeat = 0;
 
-            canvasController.MoveProgressMage(beatCount/105f);
+            canvasController.MoveProgressMage(beatCount / 105f);
             return;
         }
-        
-        
+
+
     }
-    
-    IEnumerator WaitCutsceneFirstDungeon(){
-        maxSpawnX = 0;
-        beatCount = 0;  
+
+    IEnumerator WaitCutsceneFirstDungeon()
+    {
+        maxSpawnX = levelData.GetInitialHorizontalRange(level);
+        beatCount = 0;
 
         CleanPortalsAndPlatforms();
 
         player.WalkToCenter(timeAwaintingDungeonFloor);
         audioController.PlayDungeon();
-        
+
+        cameraFollow.SetFastFollow();
+
         yield return new WaitForSeconds(timeAwaintingDungeonFloor);
 
+        cameraFollow.SetSlowFollow();
+
         portalPosition = player.transform.position;
-        isGameInCutscene = false;        
+        isGameInCutscene = false;
     }
 
-    IEnumerator WaitCutsceneStairway(){
+    IEnumerator WaitCutsceneStairway()
+    {
         maxSpawnX = 0;
-        beatCount = 0;  
+        beatCount = 0;
 
         CleanPortalsAndPlatforms();
 
-        player.WalkToCenter(8.5f);   
-        audioController.PlayStairway();    
-        
+        player.WalkToCenter(8.5f);
+        audioController.PlayStairway();
+
         yield return new WaitForSeconds(8.5f);
 
-        portalPosition = player.transform.position;             
-        isGameInCutscene = false;               
+        portalPosition = player.transform.position;
+        isGameInCutscene = false;
     }
 
     void CycleTestFalling()
     {
         if (player.rb.velocity.y < -7)
         {
-            isPlayerFalling = true;            
+            isPlayerFalling = true;
         }
     }
 
@@ -274,14 +296,17 @@ public class GameController : MonoBehaviour
         {
             case TowerLevel.dungeon:
                 {
-                    if (beatCount == 101){
+                    if (beatCount == 101)
+                    {
                         backgroundLoopController.SetStairwayStart();
                         return;
                     }
-                    if (beatCount == 104){
+                    if (beatCount == 104)
+                    {
                         backgroundLoopController.SetStairwayLoop();
                     }
-                    if (beatCount == 110){
+                    if (beatCount == 110)
+                    {
                         isGameInCutscene = true;
                         CleanPortalsAndPlatforms();
                     }
@@ -295,14 +320,6 @@ public class GameController : MonoBehaviour
                 {
                     break;
                 }
-        }
-    }
-
-    void CycleControlCover()
-    {
-        if (!isGamePaused){
-            leftCover.transform.position = Vector3.MoveTowards(leftCover.transform.position, new Vector3(-6f - maxSpawnX, leftCover.transform.position.y), Time.deltaTime*5);
-            rightCover.transform.position = Vector3.MoveTowards(rightCover.transform.position, new Vector3(6f + maxSpawnX, rightCover.transform.position.y), Time.deltaTime*5);
         }
     }
 
@@ -323,14 +340,17 @@ public class GameController : MonoBehaviour
         }
     }
 
-    void CleanPortalsAndPlatforms(){
+    void CleanPortalsAndPlatforms()
+    {
         GameObject[] platforms = GameObject.FindGameObjectsWithTag("Platform");
-        foreach (GameObject platform in platforms){
+        foreach (GameObject platform in platforms)
+        {
             Destroy(platform);
         }
 
         GameObject[] portals = GameObject.FindGameObjectsWithTag("Portal");
-        foreach (GameObject portal in portals){
+        foreach (GameObject portal in portals)
+        {
             Destroy(portal);
         }
     }
@@ -339,22 +359,26 @@ public class GameController : MonoBehaviour
 
     #region "Game Logic"
 
-    void StartScene(TowerLevel scene){
+    void StartScene(TowerLevel scene)
+    {
         isGameInCutscene = true;
 
-        if (scene == TowerLevel.dungeon){            
+        if (scene == TowerLevel.dungeon)
+        {
             needToShowFirstCutsceneDungeon = true;
             bpm = audioController.bpmDungeon;
             return;
         }
 
-        if (scene == TowerLevel.stairway){  
+        if (scene == TowerLevel.stairway)
+        {
             needToShowStairwayCutscene = true;
             bpm = audioController.bpmStairway;
             return;
         }
 
-        if (scene == TowerLevel.throne){
+        if (scene == TowerLevel.throne)
+        {
             bpm = audioController.bpmThrone;
             return;
         }
@@ -362,17 +386,27 @@ public class GameController : MonoBehaviour
 
     void GeneratePortal()
     {
+        if (beatCount % beatsUntilMoveCamera == 0)
+        {
+            cameraFollow.SetFastFollow();
+        }
+        else
+        {
+            cameraFollow.SetSlowFollow();
+        }
+
         beatCount += 1;
+        if (beatCount == 1)
+        {
+            portalPosition = Vector2.zero;
+        }
+        else
+        {
+            float y = player.gameObject.transform.position.y + Random.Range(minSpawnY, maxSpawnY); ; //  + (backgroundLoopVerticalDistance/4) ;
+            float x = Random.Range(-1 * maxSpawnX, maxSpawnX);
+            portalPosition = new Vector2(x, y);
+        }
 
-        maxSpawnX += 0.05f;
-        maxSpawnX = Mathf.Min(maxSpawnX, 5);
-
-        float yRNG = Random.Range(0, maxSpawnY);    
-
-        float y = player.gameObject.transform.position.y + (backgroundLoopVerticalDistance/4) + yRNG;
-        float x = Random.Range(-1 * maxSpawnX, maxSpawnX);
-
-        portalPosition = new Vector2(x, y);
 
         currentPortal = Instantiate(portalPrefab, portalPosition, Quaternion.identity);
         currentPortal.GetComponent<PlatformBeatController>().bpm = bpm;
@@ -381,7 +415,7 @@ public class GameController : MonoBehaviour
     }
 
     void IsFalling()
-    {       
+    {
 
         player.ResetToIdle();
         if (!hasStartedToFall)
@@ -396,46 +430,49 @@ public class GameController : MonoBehaviour
 
         GameObject platform = GameObject.FindGameObjectWithTag("StartPlatform");
         float diff = Mathf.Abs(platform.transform.position.y - player.transform.position.y);
-        if (diff < 25 && player.rb.velocity.y < - 25)
+        if (diff < 25 && player.rb.velocity.y < -25)
         {
             player.rb.drag += 25 * Time.deltaTime;
             player.rb.drag = Mathf.Min(10, player.rb.drag);
         }
-        
-    }
-    
 
-    void StabilizePlayerAndCamera(){
+    }
+
+
+    void StabilizePlayerAndCamera()
+    {
         if (player.gameObject.transform.rotation.z != 0)
         {
             player.transform.localEulerAngles = Vector3.zero;
         }
-        player.rb.drag = 0.15f; 
+        player.rb.drag = 0.15f;
         cameraFollow.SetFalling(false);
     }
 
-    private bool hasTouchedGround = false;    
+    private bool hasTouchedGround = false;
 
     public void TouchedGround(TowerLevel paramLevel)
     {
         print("Tocou o chão em " + paramLevel);
         level = paramLevel;
-        
-        hasStartedToFall = false;
-        if (!isGamePaused && !hasTouchedGround){   
-            player.ResetToIdle();                             
-            StartScene(level); 
-            StabilizePlayerAndCamera(); 
-            beatCount = 0;    
-            hasTouchedGround = true;       
-            hasMissedClick = false;     
-            isPlayerFalling = false;
-        }        
-    }  
 
-    public void ExitedGround(){
+        hasStartedToFall = false;
+        if (!isGamePaused && !hasTouchedGround)
+        {
+            player.ResetToIdle();
+            StartScene(level);
+            StabilizePlayerAndCamera();
+            beatCount = 0;
+            hasTouchedGround = true;
+            hasMissedClick = false;
+            isPlayerFalling = false;
+        }
+    }
+
+    public void ExitedGround()
+    {
         hasTouchedGround = false;
-    } 
+    }
 
     #endregion
 
@@ -452,12 +489,12 @@ public class GameController : MonoBehaviour
 
         float fps = 1f / Time.deltaTime;
         textBPM.text = "BPM: " + bpm.ToString();
-        textHeightTraveled.text = 
+        textHeightTraveled.text =
             "Contagem de Beats: " + beatCount +
             "\nAltura Máxima: " + maxHeightTraveled.ToString("F2") + "m" +
             "\nAltura: " + heightTraveled.ToString("F2") + "m" +
-            "\nTempo jogando: " +  countTimePlaying.ToString("F0") +
-            "\nFPS: " + fps.ToString("F2") ; 
+            "\nTempo jogando: " + countTimePlaying.ToString("F0") +
+            "\nFPS: " + fps.ToString("F2");
     }
 
     void UpdateImagesPlatform()
@@ -472,7 +509,7 @@ public class GameController : MonoBehaviour
     #region "Platform"
 
     public void HasMatchedClick()
-    {       
+    {
         listNextPlatforms[0] = listNextPlatforms[1];
         listNextPlatforms[1] = listPlatformsPrefab[Random.Range(0, listPlatformsPrefab.Length)];
 
@@ -482,7 +519,6 @@ public class GameController : MonoBehaviour
     public void HasMissedClick()
     {
         hasMissedClick = true;
-        player.gameObject.transform.position = portalPosition;
     }
 
     #endregion
@@ -494,7 +530,7 @@ public class GameController : MonoBehaviour
         {
             PauseGame();
         }
-    } 
+    }
 
 
     void VerifyMouseClick()
@@ -522,7 +558,7 @@ public class GameController : MonoBehaviour
             }
 
             if (isClicked)
-            {   
+            {
                 bool needToBeat = true;
 
                 RaycastHit2D[] hits = Physics2D.RaycastAll(Camera.main.ScreenToWorldPoint(touchPosition), Vector2.zero);
@@ -535,12 +571,12 @@ public class GameController : MonoBehaviour
                             hit.collider.gameObject.GetComponent<PlatformBeatController>().OnTouched(touchPosition);
                             needToBeat = false;
                         }
-                    }                     
+                    }
                 }
                 if (needToBeat)
                 {
                     audioController.PlaySFXBeat();
-                }                
+                }
             }
         }
 
@@ -559,7 +595,7 @@ public class GameController : MonoBehaviour
         {
             isGamePaused = true;
             canvasController.ShowScene(InternalScenes.main);
-            Time.timeScale = 0;            
+            Time.timeScale = 0;
             audioController.PauseEverything();
             textPause.SetActive(true);
         }
@@ -571,7 +607,7 @@ public class GameController : MonoBehaviour
             audioController.UnPauseEverything();
             textPause.SetActive(false);
         }
-        
+
     }
 
     public void QuitGame()

@@ -15,7 +15,7 @@ public class PlatformBeatController : MonoBehaviour
 
     [Header("Controllers")]
     GameController gameController;
-    
+
 
     int beatStep = 0;
     bool canHitTheBeat = false;
@@ -36,13 +36,15 @@ public class PlatformBeatController : MonoBehaviour
     bool devHasGenerated = false;
     private void Update()
     {
-        timePassed = Time.time - timeStarted;        
+        timePassed = Time.time - timeStarted;
     }
 
     void FixedUpdate()
-    {       
-        if (gameController.devIsAutoGeneratingPlatforms && !devHasGenerated){
-            if (timePassed > timePerfect()){
+    {
+        if (gameController.devIsAutoGeneratingPlatforms && !devHasGenerated)
+        {
+            if (timePassed > timePerfect())
+            {
                 OnTouched(transform.position - new Vector3(0, 1.25f, 0), false);
                 devHasGenerated = true;
             }
@@ -54,7 +56,7 @@ public class PlatformBeatController : MonoBehaviour
                 {
                     if (timePassed > timeEarly() && !gameController.hasMissedClick)
                     {
-                        currentBeatIndicator.ShowPortal();
+                        //currentBeatIndicator.ShowPortal();
                         beatStep++;
                     }
                     return;
@@ -87,19 +89,21 @@ public class PlatformBeatController : MonoBehaviour
             Destroy(gameObject);
         }
 
-        
+
     }
 
     public void OnTouched(Vector2 touchPosition, bool needToConvert = true)
     {
-        if (!hasClicked){
+        if (!hasClicked)
+        {
             hasClicked = true;
-            
+
             Vector3 clickOnWorld = touchPosition;
 
-            if (needToConvert){
+            if (needToConvert)
+            {
                 clickOnWorld = Camera.main.ScreenToWorldPoint(touchPosition);
-            }        
+            }
 
             if (timePassed < timeOK())
             {
@@ -126,7 +130,7 @@ public class PlatformBeatController : MonoBehaviour
 
             GeneratePlatform(touchPosition, needToConvert);
         }
-        
+
     }
 
 
@@ -134,26 +138,22 @@ public class PlatformBeatController : MonoBehaviour
     {
         if (canHitTheBeat)
         {
+            currentBeatIndicator.ShowPortal();
+
             Vector3 clickOnWorld = touchPosition;
-            if (needToConvert){
+            if (needToConvert)
+            {
                 clickOnWorld = Camera.main.ScreenToWorldPoint(touchPosition);
             }
 
             GameObject platform = Instantiate(gameController.listNextPlatforms[0], new Vector3(clickOnWorld.x, clickOnWorld.y, 0), Quaternion.identity);
             platform.transform.localScale = platform.transform.localScale * sizeMultiplier;
             currentBeatIndicator.gameObject.SetActive(false);
-            if (timePassed >= timePerfect())
-            {
-                gameController.audioController.PlaySFXPerfect();                
-            }
-            else
-            {
-                gameController.audioController.PlaySFXClap();
-            }
+            gameController.audioController.PlaySFXClap();
             gameController.HasMatchedClick();
             GetComponent<SelfDestroyController>().isStoped = false;
             GetComponent<SelfDestroyController>().timeToDestroy = 1;
-            
+
         }
         else
         {
