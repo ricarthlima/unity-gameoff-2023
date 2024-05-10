@@ -26,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 274720634823922318}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -3, z: 0}
+  m_LocalPosition: {x: 0, y: -3.5, z: 0}
   m_LocalScale: {x: 0.15, y: 0.15, z: 0.15}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -99,7 +99,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0f419445debacf4baae1ef8e73a09b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bpm: 60
   beat: {fileID: 2895449344861091455}
   portalSprite: {fileID: 3542785555755763126}
 --- !u!1 &1884389433286179304
@@ -150,7 +149,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fcd829ed92782c4449a4118202bb0387, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bpm: 0
   timePassed: 0
   currentBeatIndicator: {fileID: 6886121494497069497}
 --- !u!114 &744525991645534661
@@ -180,7 +178,7 @@ CircleCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -3}
+  m_Offset: {x: 0, y: -3.5}
   serializedVersion: 2
   m_Radius: 2
 --- !u!1 &2895449344861091455

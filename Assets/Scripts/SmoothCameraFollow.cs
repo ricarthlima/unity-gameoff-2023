@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class SmoothCameraFollow : MonoBehaviour
 {
+    [SerializeField] GameController gameController;
     private bool isFollowing;
     private float speed = 1;
 
@@ -17,6 +18,7 @@ public class SmoothCameraFollow : MonoBehaviour
     private Vector3 innerOffset = Vector3.zero;
 
     bool isFalling;
+
 
     private void Start()
     {
@@ -53,13 +55,13 @@ public class SmoothCameraFollow : MonoBehaviour
     public void SetSlowFollow()
     {
         isFollowing = true;
-        speed = 4;
+        speed = 4 * (gameController.bpm / 60);
     }
 
     public void SetFastFollow()
     {
         isFollowing = true;
-        speed = 8;
+        speed = 8 * (gameController.bpm / 60);
     }
 
     public void StopFollow()

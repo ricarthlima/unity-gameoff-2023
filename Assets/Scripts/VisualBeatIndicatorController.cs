@@ -14,9 +14,11 @@ public class VisualBeatIndicatorController : MonoBehaviour
     private float timePassed;
     private readonly int initialBeatScale = 3;
 
+    private float innerBPM;
     private void Awake()
     {
         gameController = GameObject.Find("GameController").GetComponent<GameController>();
+        innerBPM = gameController.bpm / gameController.beatsToPortal;
     }
     private void Start()
     {
@@ -26,10 +28,10 @@ public class VisualBeatIndicatorController : MonoBehaviour
     void Update()
     {
         timePassed = Time.time - timeStart;
-        float newScale = (initialBeatScale + 1) - (timePassed / (60f / gameController.bpm) * initialBeatScale);
+        float newScale = (initialBeatScale + 1) - (timePassed / (60f / innerBPM) * initialBeatScale);
         beat.transform.localScale = new Vector3(newScale, newScale, newScale);
 
-        float newOpacity = (50f + (timePassed / (60f / gameController.bpm) * 200f)) / 250f;
+        float newOpacity = (50f + (timePassed / (60f / innerBPM) * 200f)) / 250f;
         Color oldColor = beat.GetComponent<SpriteRenderer>().color;
         beat.GetComponent<SpriteRenderer>().color = new Color(oldColor.r, oldColor.g, oldColor.b, newOpacity);
     }
