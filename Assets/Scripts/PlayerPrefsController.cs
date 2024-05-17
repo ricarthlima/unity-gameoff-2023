@@ -9,21 +9,36 @@ public class PlayerPrefsController : MonoBehaviour
     private const string keySoundSFX = "SFX";
     private const string keyRecHigh = "REC_HIGH";
     private const string keyRecTime = "REC_TIME";
+    private const string keyRecPortalsDungeon = "REC_PORTALS_DUNGEON";
 
     private float soundBGM;
     private float soundSFX;
     private float recHigh;
     private float recTime;
+    private int recPortalsDungeon;
 
     void Start()
+    {
+        InitializeAll();
+    }
+
+    private void InitializeAll()
     {
         soundBGM = PlayerPrefs.GetFloat(key: keySoundBGM, 1);
         soundSFX = PlayerPrefs.GetFloat(key: keySoundSFX, 1);
         recHigh = PlayerPrefs.GetFloat(key: keyRecHigh, 0);
         recTime = PlayerPrefs.GetFloat(key: keyRecTime, 0);
+        recPortalsDungeon = PlayerPrefs.GetInt(key: keyRecPortalsDungeon, 0);
     }
 
-    public float SoundBGM{
+    public void ClearAll()
+    {
+        PlayerPrefs.DeleteAll();
+        InitializeAll();
+    }
+
+    public float SoundBGM
+    {
         get
         {
             return soundBGM;
@@ -35,7 +50,8 @@ public class PlayerPrefsController : MonoBehaviour
         }
     }
 
-    public float SoundSFX{
+    public float SoundSFX
+    {
         get
         {
             return soundSFX;
@@ -47,7 +63,8 @@ public class PlayerPrefsController : MonoBehaviour
         }
     }
 
-    public float RecHigh{
+    public float RecHigh
+    {
         get
         {
             return recHigh;
@@ -59,7 +76,8 @@ public class PlayerPrefsController : MonoBehaviour
         }
     }
 
-    public float RecTime{
+    public float RecTime
+    {
         get
         {
             return recTime;
@@ -68,6 +86,19 @@ public class PlayerPrefsController : MonoBehaviour
         {
             recTime = value;
             PlayerPrefs.SetFloat(keyRecTime, value);
+        }
+    }
+
+    public int RecPortalsDungeon
+    {
+        get
+        {
+            return recPortalsDungeon;
+        }
+        set
+        {
+            recPortalsDungeon = value;
+            PlayerPrefs.SetInt(keyRecPortalsDungeon, value);
         }
     }
 }

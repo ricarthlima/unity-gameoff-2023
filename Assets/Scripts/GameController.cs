@@ -15,6 +15,7 @@ public class GameController : MonoBehaviour
 
     [Header("Controllers")]
     [SerializeField] CanvasController canvasController;
+    [SerializeField] InfoController infoController;
 
     public float bpm;
     [SerializeField] private int portalsUntilMoveCamera;
@@ -545,6 +546,8 @@ public class GameController : MonoBehaviour
             hasTouchedGround = true;
             hasMissedClick = false;
             isPlayerFalling = false;
+            canvasController.MoveProgressMage(0, level: level);
+            infoController.isFirstTimePlayingRecordSFX = true;
         }
     }
 
@@ -560,7 +563,7 @@ public class GameController : MonoBehaviour
 
         progress = countPortals / levelData.GetPortalsToEnd(level);
 
-        canvasController.MoveProgressMage(progress);
+        canvasController.MoveProgressMage(progress, level: level);
     }
 
     #endregion

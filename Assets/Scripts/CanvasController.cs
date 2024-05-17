@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public enum InternalScenes { main, settings, hud };
@@ -33,6 +34,7 @@ public class CanvasController : MonoBehaviour
     [SerializeField] private Toggle toggleFullscreen;
 
     [SerializeField] private RectTransform progressMageRect;
+    [SerializeField] private RectTransform progressMageRecordRect;
     [SerializeField] TextMeshProUGUI textInfos;
     [SerializeField] private Image imageNextPlatform;
     [SerializeField] private Image imageSecondPlatform;
@@ -160,11 +162,26 @@ public class CanvasController : MonoBehaviour
         selectedRes = index;
     }
 
-    public void MoveProgressMage(float progress)
+    public void MoveProgressMage(float progress, TowerLevel level)
     {
         Vector3 newPos = progressMageRect.anchoredPosition;
-        newPos.y = -225 + (progress * 450);
+        newPos.y = -450 + (progress * 300);
+
+        if (level == TowerLevel.stairway) { newPos.y += 300; }
+        if (level == TowerLevel.throne) { newPos.y += 600; }
+
         progressMageRect.anchoredPosition = newPos;
+    }
+
+    public void MoveProgressRecord(float progress, TowerLevel level)
+    {
+        Vector3 newPos = progressMageRecordRect.anchoredPosition;
+        newPos.y = -450 + (progress * 300);
+
+        if (level == TowerLevel.stairway) { newPos.y += 300; }
+        if (level == TowerLevel.throne) { newPos.y += 600; }
+
+        progressMageRecordRect.anchoredPosition = newPos;
     }
 
     public void UpdateUI()
@@ -183,6 +200,7 @@ public class CanvasController : MonoBehaviour
         textInfos.text += "%: " + gameController.progress + "\n";
         textInfos.text += "Portals Count: " + gameController.countPortals + "\n";
         textInfos.text += "Total Portals: " + gameController.levelData.GetPortalsToEnd(gameController.level) + "\n";
+        textInfos.text += "Record Portals: " + infoController.maxPortalsDungeon + "\n";
         //textInfos.text += "Time Playing: " + infoController.countTimePlaying.ToString("F2") + "m" + "\n";
     }
 
@@ -218,5 +236,12 @@ public class CanvasController : MonoBehaviour
         warningElapsedTime = 0;
         warningDuration = 25;
         panelWarning.color = new Color(0.5f, 0.5f, 0.5f, 0.33f);
+    }
+
+    public void ClearAllData()
+    {
+        prefs.ClearAll();
+        string sceneName = SceneManager.GetActiveScene().name;
+        SceneManager.LoadScene(sceneName);
     }
 }
