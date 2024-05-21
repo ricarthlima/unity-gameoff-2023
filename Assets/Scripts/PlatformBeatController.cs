@@ -15,7 +15,7 @@ public class PlatformBeatController : MonoBehaviour
     GameController gameController;
 
 
-    int beatStep = 0;
+    int beatSteps = 0;
     bool canHitTheBeat = false;
     float sizeMultiplier = 1;
 
@@ -56,27 +56,27 @@ public class PlatformBeatController : MonoBehaviour
             }
         }
 
-        switch (beatStep)
+        switch (beatSteps)
         {
             case 0:
                 {
-                    if (timePassed > timeEarly())
+                    if (timePassed > timeShowPortal())
                     {
                         //currentBeatIndicator.ShowPortal();
-                        beatStep++;
+                        beatSteps++;
                     }
                     return;
                 }
             case 1:
                 {
-                    if (timePassed > timeOK())
+                    if (timePassed > timeAllowClick())
                     {
                         // Libera clique correto
                         canHitTheBeat = true;
 
                         // Indicador fica amaerelo
-                        currentBeatIndicator.MakeYellow();
-                        beatStep++;
+                        //currentBeatIndicator.MakeYellow();
+                        beatSteps++;
                     }
                     return;
                 }
@@ -85,72 +85,29 @@ public class PlatformBeatController : MonoBehaviour
                     if (timePassed > bpmTime())
                     {
                         gameController.TeleportPlayer(transform.position);
-                        beatStep++;
+                        beatSteps++;
                     }
                     return;
                 }
-                // case 3:
-                //     {
-                //         if (timePassed > timeLate())
-                //         {
-                //             currentBeatIndicator.MakeRed();
-                //             canHitTheBeat = false;
-                //         }
-                //         return;
-                //     }
         }
-
-
-
     }
 
     public void OnTouched(Vector2 touchPosition, bool needToConvert = true)
     {
-        if (!hasClicked)
+        if (!hasClicked && canHitTheBeat)
         {
             hasClicked = true;
-
-            Vector3 clickOnWorld = touchPosition;
-
-            if (needToConvert)
-            {
-                clickOnWorld = Camera.main.ScreenToWorldPoint(touchPosition);
-            }
-
-            if (timePassed < timeOK())
-            {
-                //Instantiate(textFailPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
-            }
-            else if (timePassed < timeNice())
-            {
-                //Instantiate(textOKPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
-            }
-            else if (timePassed < timePerfect())
-            {
-                //Instantiate(textNicePrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
-                sizeMultiplier = 1;
-            }
-            else if (timePassed < timeDie())
-            {
-                //Instantiate(textPerfectPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
-                sizeMultiplier = 1.30f;
-            }
-            // else if (timePassed > timeLate())
-            // {
-            //     //Instantiate(textFailPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);                
-            // }
-
             GeneratePlatform(touchPosition, needToConvert);
+        }
+        else
+        {
+            gameController.HasMissedClick();
         }
 
     }
 
-
     void GeneratePlatform(Vector2 touchPosition, bool needToConvert = true)
     {
-        // if (canHitTheBeat)
-        // {
-        //     currentBeatIndicator.ShowPortal();
         if (!gameController.hasMissedClick)
         {
             Vector3 clickOnWorld = touchPosition;
@@ -167,15 +124,6 @@ public class PlatformBeatController : MonoBehaviour
             GetComponent<SelfDestroyController>().isStoped = false;
             GetComponent<SelfDestroyController>().timeToDestroy = 1;
         }
-
-
-        // }
-        // else
-        // {
-        //     gameController.audioController.PlaySFXError();
-        //     currentBeatIndicator.MakeRed();
-        //     gameController.HasMissedClick();
-        // }
     }
 
     float bpmTime()
@@ -183,33 +131,75 @@ public class PlatformBeatController : MonoBehaviour
         return 60f / innerBPM;
     }
 
-    float timeEarly()
+    float timeShowPortal()
     {
-        return bpmTime() * 0.45f;
+        return 0;
     }
 
-    float timeOK()
-    {
-        return bpmTime() * 0.9f;
-    }
-
-    float timeNice()
+    float timeAllowClick()
     {
         return bpmTime() * 0.75f;
     }
 
-    float timePerfect()
+    float timeDie()
     {
-        return bpmTime() * 0.95f;
+        return bpmTime() * 1.50f;
     }
+
+    // float timeEarly()
+    // {
+    //     return bpmTime() * 0.45f;
+    // }
+
+    // float timeOK()
+    // {
+    //     return bpmTime() * 0.9f;
+    // }
+
+    // float timeNice()
+    // {
+    //     return bpmTime() * 0.75f;
+    // }
+
+    // float timePerfect()
+    // {
+    //     return bpmTime() * 0.95f;
+    // }
 
     // float timeLate()
     // {
     //     return bpmTime() * 1.33f;
     // }
 
-    float timeDie()
-    {
-        return bpmTime() * 1.10f;
-    }
+    //  Vector3 clickOnWorld = touchPosition;
+
+    //         if (needToConvert)
+    //         {
+    //             clickOnWorld = Camera.main.ScreenToWorldPoint(touchPosition);
+    //         }
+
+    //         if (timePassed < timeOK())
+    //         {
+    //             //Instantiate(textFailPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
+    //         }
+    //         else if (timePassed < timeNice())
+    //         {
+    //             //Instantiate(textOKPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
+    //         }
+    //         else if (timePassed < timePerfect())
+    //         {
+    //             //Instantiate(textNicePrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
+    //             sizeMultiplier = 1;
+    //         }
+    //         else if (timePassed < timeDie())
+    //         {
+    //             //Instantiate(textPerfectPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);
+    //             sizeMultiplier = 1.30f;
+    //         }
+    //         // else if (timePassed > timeLate())
+    //         // {
+    //         //     //Instantiate(textFailPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);                
+    //         // }
+
+
 }

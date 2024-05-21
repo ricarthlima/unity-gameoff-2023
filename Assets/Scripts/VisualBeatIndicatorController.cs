@@ -7,12 +7,14 @@ public class VisualBeatIndicatorController : MonoBehaviour
 {
     GameController gameController;
 
+    [SerializeField] private GameObject fixedBeat;
     [SerializeField] private GameObject beat;
     [SerializeField] private GameObject portalSprite;
 
     private float timeStart;
     private float timePassed;
-    private readonly int initialBeatScale = 3;
+    private readonly float initialBeatScale = 3f;
+    private readonly float finalBeatScale = 1f;
 
     private float innerBPM;
     private void Awake()
@@ -28,7 +30,7 @@ public class VisualBeatIndicatorController : MonoBehaviour
     void Update()
     {
         timePassed = Time.time - timeStart;
-        float newScale = (initialBeatScale + 1) - (timePassed / (60f / innerBPM) * initialBeatScale);
+        float newScale = Mathf.Lerp(initialBeatScale, finalBeatScale, timePassed / (60f / innerBPM));// (initialBeatScale + 1) - (timePassed / (60f / innerBPM) * initialBeatScale);
         beat.transform.localScale = new Vector3(newScale, newScale, newScale);
 
         float newOpacity = (50f + (timePassed / (60f / innerBPM) * 200f)) / 250f;
@@ -44,13 +46,13 @@ public class VisualBeatIndicatorController : MonoBehaviour
 
     public void MakeYellow()
     {
-        GetComponent<SpriteRenderer>().color = Color.yellow;
+        fixedBeat.GetComponent<SpriteRenderer>().color = Color.yellow;
         beat.GetComponent<SpriteRenderer>().color = Color.yellow;
     }
 
     public void MakeRed()
     {
-        GetComponent<SpriteRenderer>().color = Color.red;
+        fixedBeat.GetComponent<SpriteRenderer>().color = Color.red;
         beat.GetComponent<SpriteRenderer>().color = Color.red;
     }
 }
