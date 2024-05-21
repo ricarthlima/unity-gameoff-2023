@@ -613,6 +613,7 @@ MonoBehaviour:
   devIsAutoGeneratingPlatforms: 0
   beatsToPortal: 4
   countPortals: 0
+  beatsToBeat: 2
   progress: 0
 --- !u!4 &137176481
 Transform:

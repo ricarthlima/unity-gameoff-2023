@@ -4,15 +4,21 @@ using UnityEngine;
 
 public class PlatformBeatController : MonoBehaviour
 {
-
     private float timeStarted;
     [SerializeField] private float timePassed;
 
     [Header("Visual")]
-    [SerializeField] VisualBeatIndicatorController currentBeatIndicator;
+    [SerializeField] private GameObject indicatorGroup;
+    [SerializeField] private GameObject fixedBeat;
+    [SerializeField] private GameObject beat;
+    [SerializeField] private GameObject portalSprite;
+    [SerializeField] private float initialBeatScale;
+    [SerializeField] private float finalBeatScale;
+
 
     [Header("Controllers")]
     GameController gameController;
+
 
 
     int beatSteps = 0;
@@ -22,11 +28,13 @@ public class PlatformBeatController : MonoBehaviour
     bool hasClicked = false;
 
     float innerBPM;
+    float innerSpeed;
 
     private void Awake()
     {
         gameController = GameObject.Find("GameController").GetComponent<GameController>();
         innerBPM = gameController.bpm / gameController.beatsToPortal;
+        innerSpeed = gameController.beatsToBeat;
     }
 
     private void Start()
@@ -38,6 +46,8 @@ public class PlatformBeatController : MonoBehaviour
     private void Update()
     {
         timePassed = Time.time - timeStarted;
+
+        UpdateBeatIndicator();
     }
 
     void FixedUpdate()
@@ -51,7 +61,7 @@ public class PlatformBeatController : MonoBehaviour
         {
             if (timePassed > bpmTime())
             {
-                OnTouched(currentBeatIndicator.transform.position, false);
+                OnTouched(transform.position, false);
                 devHasGenerated = true;
             }
         }
@@ -118,7 +128,7 @@ public class PlatformBeatController : MonoBehaviour
 
             GameObject platform = Instantiate(gameController.listNextPlatforms[0], new Vector3(clickOnWorld.x, clickOnWorld.y, 0), Quaternion.identity);
             platform.transform.localScale = platform.transform.localScale * sizeMultiplier;
-            currentBeatIndicator.gameObject.SetActive(false);
+            indicatorGroup.SetActive(false);
             gameController.audioController.PlaySFXClap();
             gameController.HasMatchedClick();
             GetComponent<SelfDestroyController>().isStoped = false;
@@ -126,9 +136,11 @@ public class PlatformBeatController : MonoBehaviour
         }
     }
 
+    #region "Timers"
+
     float bpmTime()
     {
-        return 60f / innerBPM;
+        return (60f / innerBPM) * innerSpeed;
     }
 
     float timeShowPortal()
@@ -146,6 +158,39 @@ public class PlatformBeatController : MonoBehaviour
         return bpmTime() * 1.50f;
     }
 
+    #endregion
+
+    #region "Indicator"
+    void UpdateBeatIndicator()
+    {
+        float newScale = Mathf.Lerp(initialBeatScale, finalBeatScale, timePassed / bpmTime());// (initialBeatScale + 1) - (timePassed / (60f / innerBPM) * initialBeatScale);
+        beat.transform.localScale = new Vector3(newScale, newScale, newScale);
+
+        float newOpacity = (50f + (timePassed / (60f / innerBPM) * 200f)) / 250f;
+        Color oldColor = beat.GetComponent<SpriteRenderer>().color;
+        beat.GetComponent<SpriteRenderer>().color = new Color(oldColor.r, oldColor.g, oldColor.b, newOpacity);
+    }
+
+    public void ShowPortal()
+    {
+        portalSprite.SetActive(true);
+    }
+
+    public void MakeYellow()
+    {
+        fixedBeat.GetComponent<SpriteRenderer>().color = Color.yellow;
+        beat.GetComponent<SpriteRenderer>().color = Color.yellow;
+    }
+
+    public void MakeRed()
+    {
+        fixedBeat.GetComponent<SpriteRenderer>().color = Color.red;
+        beat.GetComponent<SpriteRenderer>().color = Color.red;
+    }
+
+    #endregion
+
+    #region  "Old code"
     // float timeEarly()
     // {
     //     return bpmTime() * 0.45f;
@@ -200,6 +245,6 @@ public class PlatformBeatController : MonoBehaviour
     //         // {
     //         //     //Instantiate(textFailPrefab, new Vector3(clickOnWorld.x + 1f, clickOnWorld.y, 0), Quaternion.identity);                
     //         // }
-
+    #endregion
 
 }

@@ -52,7 +52,7 @@ public class GameController : MonoBehaviour
 
     GameObject currentPortal;
 
-    // Spawn da Plafatorma
+    // Spawn da Plataforma
     //float timerBeat = 0;
     float timeRestarted = 0;
 
@@ -62,9 +62,9 @@ public class GameController : MonoBehaviour
 
     // New game controllers
     public bool isGamePaused = true;
-    bool isGameInCutscene = true; // Começos de fase são cutscene, cutscenes são cutscenes, queda é cutscene
+    bool isGameInCutscene = true; // Começos de fase são cut scene, cut scenes são cut scenes, queda é cut scene
 
-    // Cutscenes
+    // Cut Scenes
     bool needToShowFirstCutsceneDungeon = true;
     bool needToShowStairwayCutscene = false;
 
@@ -82,6 +82,7 @@ public class GameController : MonoBehaviour
 
     public float beatsToPortal;
     public int countPortals = 0;
+    public int beatsToBeat;
 
     bool canGeneratePortals = false;
 
@@ -348,7 +349,7 @@ public class GameController : MonoBehaviour
 
         CheckUniqueEvent(
             towerLevel: TowerLevel.dungeon,
-            beat: 190 - Mathf.FloorToInt(beatsToPortal),
+            beat: 190 - (Mathf.FloorToInt(beatsToPortal) * beatsToBeat),
             id: 5,
             action: () =>
                 {
@@ -365,6 +366,7 @@ public class GameController : MonoBehaviour
             action: () =>
                 {
                     beatsToPortal = 1;
+                    beatsToBeat = 1;
                     canGeneratePortals = true;
                 }
         );
