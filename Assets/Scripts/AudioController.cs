@@ -16,6 +16,7 @@ public class AudioController : MonoBehaviour
     {
         sourceMenu.volume = prefs.SoundBGM;
         sourceBGM.volume = prefs.SoundBGM;
+        sourceMetronome.volume = prefs.SoundMTR;
         sourceEffectFalling.volume = prefs.SoundSFX;
     }
 
@@ -37,6 +38,10 @@ public class AudioController : MonoBehaviour
     #region  "Music"
 
     [Header("Source Background Music")]
+    public AudioSource sourceMetronome;
+    [SerializeField] private AudioClip metronome120;
+
+    [Header("Source Background Music")]
     public AudioSource sourceBGM;
 
     [Header("Dungeon Settings")]
@@ -55,9 +60,13 @@ public class AudioController : MonoBehaviour
         if (fromTheBegining)
         {
             sourceBGM.time = 0;
+            sourceMetronome.time = 0;
         }
         sourceBGM.clip = bgmDungeon;
         sourceBGM.Play();
+
+        sourceMetronome.clip = metronome120;
+        sourceMetronome.Play();
     }
 
     public void PlayStairway(bool fromTheBegining = true)
@@ -128,7 +137,7 @@ public class AudioController : MonoBehaviour
 
     public void PlaySFXBeat()
     {
-        EquilizeSFX(Instantiate(sfxBeat), 0.1f);
+        EquilizeSFX(Instantiate(sfxBeat), 0.75f);
         ;
     }
 
@@ -144,6 +153,8 @@ public class AudioController : MonoBehaviour
         sourceMenu.Play();
 
         sourceBGM.Pause();
+        sourceMetronome.Pause();
+
         sourceEffectFalling.Pause();
     }
 
@@ -152,6 +163,8 @@ public class AudioController : MonoBehaviour
         sourceMenu.Stop();
 
         sourceBGM.UnPause();
+        sourceMetronome.UnPause();
+
         sourceEffectFalling.UnPause();
     }
     #endregion

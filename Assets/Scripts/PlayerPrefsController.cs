@@ -6,12 +6,14 @@ public class PlayerPrefsController : MonoBehaviour
 {
     [Header("Keys")]
     private const string keySoundBGM = "BGM";
+    private const string keySoundMTR = "MTR";
     private const string keySoundSFX = "SFX";
     private const string keyRecHigh = "REC_HIGH";
     private const string keyRecTime = "REC_TIME";
     private const string keyRecPortalsDungeon = "REC_PORTALS_DUNGEON";
 
     private float soundBGM;
+    private float soundMTR;
     private float soundSFX;
     private float recHigh;
     private float recTime;
@@ -25,6 +27,7 @@ public class PlayerPrefsController : MonoBehaviour
     private void InitializeAll()
     {
         soundBGM = PlayerPrefs.GetFloat(key: keySoundBGM, 1);
+        soundMTR = PlayerPrefs.GetFloat(key: keySoundMTR, 1);
         soundSFX = PlayerPrefs.GetFloat(key: keySoundSFX, 1);
         recHigh = PlayerPrefs.GetFloat(key: keyRecHigh, 0);
         recTime = PlayerPrefs.GetFloat(key: keyRecTime, 0);
@@ -47,6 +50,19 @@ public class PlayerPrefsController : MonoBehaviour
         {
             soundBGM = value;
             PlayerPrefs.SetFloat(keySoundBGM, value);
+        }
+    }
+
+    public float SoundMTR
+    {
+        get
+        {
+            return soundMTR;
+        }
+        set
+        {
+            soundMTR = value;
+            PlayerPrefs.SetFloat(keySoundMTR, value);
         }
     }
 

@@ -129,7 +129,7 @@ public class PlatformBeatController : MonoBehaviour
             GameObject platform = Instantiate(gameController.listNextPlatforms[0], new Vector3(clickOnWorld.x, clickOnWorld.y, 0), Quaternion.identity);
             platform.transform.localScale = platform.transform.localScale * sizeMultiplier;
             indicatorGroup.SetActive(false);
-            gameController.audioController.PlaySFXClap();
+            gameController.audioController.PlaySFXBeat();
             gameController.HasMatchedClick();
             GetComponent<SelfDestroyController>().isStoped = false;
             GetComponent<SelfDestroyController>().timeToDestroy = 1;

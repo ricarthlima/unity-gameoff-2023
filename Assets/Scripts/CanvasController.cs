@@ -23,6 +23,7 @@ public class CanvasController : MonoBehaviour
     [SerializeField] private GameObject panelSettings;
     [SerializeField] private Slider sliderBGM;
     [SerializeField] private Slider sliderSFX;
+    [SerializeField] private Slider sliderMTR;
 
     [Header("Game HUD")]
     [SerializeField] private GameObject panelGameHUD;
@@ -31,7 +32,7 @@ public class CanvasController : MonoBehaviour
     List<Resolution> resolutions = new List<Resolution>();
     public TMP_Dropdown dropdownResolution;
 
-    [SerializeField] private Toggle toggleFullscreen;
+    [SerializeField] private Toggle toggleFullScreen;
 
     [SerializeField] private RectTransform progressMageRect;
     [SerializeField] private RectTransform progressMageRecordRect;
@@ -42,7 +43,7 @@ public class CanvasController : MonoBehaviour
 
     [SerializeField] private Sprite spriteMistake;
 
-    bool isFullscreen;
+    bool isFullScreen = true;
     int selectedRes;
 
     float warningElapsedTime;
@@ -54,8 +55,28 @@ public class CanvasController : MonoBehaviour
 
         ShowScene(InternalScenes.main);
 
-        toggleFullscreen.isOn = Screen.fullScreen;
+        toggleFullScreen.isOn = Screen.fullScreen;
 
+        UpdateImagesPlatform();
+    }
+
+
+
+    private void Update()
+    {
+        UpdateUI();
+
+        if (panelWarning.color != Color.clear)
+        {
+            warningElapsedTime += Time.deltaTime;
+            panelWarning.color = Color.Lerp(panelWarning.color, Color.clear, warningElapsedTime / warningDuration);
+        }
+
+
+    }
+
+    void UpdateResolutions()
+    {
         foreach (Resolution res in Screen.resolutions)
         {
             if (res.width / res.height == 16 / 9)
@@ -83,25 +104,11 @@ public class CanvasController : MonoBehaviour
         dropdownResolution.AddOptions(ress);
         dropdownResolution.value = currentResIndex;
         dropdownResolution.RefreshShownValue();
-
-        UpdateImagesPlatform();
-    }
-
-    private void Update()
-    {
-        UpdateUI();
-
-        if (panelWarning.color != Color.clear)
-        {
-            warningElapsedTime += Time.deltaTime;
-            panelWarning.color = Color.Lerp(panelWarning.color, Color.clear, warningElapsedTime / warningDuration);
-        }
-
-
     }
 
     public void ShowSettingsScene()
     {
+        UpdateResolutions();
         ShowScene(InternalScenes.settings);
     }
 
@@ -109,11 +116,12 @@ public class CanvasController : MonoBehaviour
     {
         prefs.SoundBGM = sliderBGM.value;
         prefs.SoundSFX = sliderSFX.value;
+        prefs.SoundMTR = sliderMTR.value;
 
-        Screen.fullScreen = isFullscreen;
+        Screen.fullScreen = isFullScreen;
         Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
 
-        Screen.SetResolution(resolutions[selectedRes].width, resolutions[selectedRes].height, isFullscreen);
+        Screen.SetResolution(resolutions[selectedRes].width, resolutions[selectedRes].height, isFullScreen);
 
         ShowScene(InternalScenes.main);
     }
@@ -137,6 +145,7 @@ public class CanvasController : MonoBehaviour
 
 
                     sliderBGM.value = prefs.SoundBGM;
+                    sliderMTR.value = prefs.SoundMTR;
                     sliderSFX.value = prefs.SoundSFX;
                     break;
                 }
@@ -154,7 +163,7 @@ public class CanvasController : MonoBehaviour
 
     public void SetFullscreen(bool value)
     {
-        isFullscreen = value;
+        isFullScreen = value;
     }
 
     public void SetResolution(int index)
