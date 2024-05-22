@@ -165,7 +165,7 @@ public class PlatformBeatController : MonoBehaviour
 
     float timeAllowClick()
     {
-        return bpmTime() * 0.85f;
+        return bpmTime() * 0.925f;
     }
 
     float timeTeleportPlayer()

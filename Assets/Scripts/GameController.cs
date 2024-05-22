@@ -21,7 +21,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private int portalsUntilMoveCamera;
     public float maxSpawnX;
     [SerializeField] private float minSpawnY;
-    [SerializeField] private float maxSpawnY;
+    [SerializeField] public float maxSpawnY;
     public TowerLevel level = TowerLevel.dungeon;
     public int beatCount = 0;
 
@@ -323,6 +323,16 @@ public class GameController : MonoBehaviour
 
         CheckUniqueEvent(
             towerLevel: TowerLevel.dungeon,
+            beat: 22,
+            id: 0.1f,
+            action: () =>
+                {
+                    cameraFollow.StartRising(newSpeed: 1.78f);
+                }
+        );
+
+        CheckUniqueEvent(
+            towerLevel: TowerLevel.dungeon,
             beat: 58,
             id: 1,
             action: () =>
@@ -345,6 +355,17 @@ public class GameController : MonoBehaviour
                     innerBeatCount = 0;
                     listBeatsWithPortals.Clear();
                     canGeneratePortals = true;
+                    cameraFollow.StartFollowing();
+                }
+        );
+
+        CheckUniqueEvent(
+            towerLevel: TowerLevel.dungeon,
+            beat: 70,
+            id: 2,
+            action: () =>
+                {
+                    cameraFollow.StartRising(3.64f);
                 }
         );
 
@@ -490,16 +511,6 @@ public class GameController : MonoBehaviour
         if (!listBeatsWithPortals.Contains(innerBeatCount))
         {
             listBeatsWithPortals.Add(innerBeatCount);
-
-            if (countPortals % portalsUntilMoveCamera == 0)
-            {
-                cameraFollow.SetFastFollow();
-            }
-            else
-            {
-                cameraFollow.SetSlowFollow();
-            }
-
             countPortals++;
 
             Vector2 newPortalPosition = Vector2.zero;
@@ -582,6 +593,7 @@ public class GameController : MonoBehaviour
             isPlayerFalling = false;
             canvasController.MoveProgressMage(0, level: level);
             infoController.isFirstTimePlayingRecordSFX = true;
+            cameraFollow.StartFollowing();
         }
     }
 

@@ -5,7 +5,6 @@ using UnityEngine;
 public class SmoothCameraFollow : MonoBehaviour
 {
     [SerializeField] GameController gameController;
-    private bool isFollowing;
     private float speed = 1;
 
     public Transform target;
@@ -18,7 +17,10 @@ public class SmoothCameraFollow : MonoBehaviour
     private Vector3 innerOffset = Vector3.zero;
 
     bool isFalling;
+    bool isRising;
+    bool isFollowing;
 
+    float followSpeed = 8;
 
     private void Start()
     {
@@ -30,10 +32,16 @@ public class SmoothCameraFollow : MonoBehaviour
     {
         if (!isFalling)
         {
-            if (isFollowing)
+            if (isRising)
+            {
+                Vector3 movePosistion = new Vector3(transform.position.x, 1000000) + innerOffset;
+                Vector3 damp = Vector3.SmoothDamp(transform.position, movePosistion, ref velocity, innerDamping, speed);
+                transform.position = new Vector3(transform.position.x, damp.y, transform.position.z);
+            }
+            else if (isFollowing)
             {
                 Vector3 movePosistion = target.position + innerOffset;
-                Vector3 damp = Vector3.SmoothDamp(transform.position, movePosistion, ref velocity, innerDamping, speed);
+                Vector3 damp = Vector3.SmoothDamp(transform.position, movePosistion, ref velocity, innerDamping, followSpeed);
                 transform.position = new Vector3(transform.position.x, damp.y, transform.position.z);
             }
 
@@ -52,20 +60,22 @@ public class SmoothCameraFollow : MonoBehaviour
         isFalling = setFalling;
     }
 
-    public void SetSlowFollow()
+    public void StartRising(float newSpeed)
     {
-        isFollowing = true;
-        speed = 6 * (gameController.bpm / 60);
-    }
-
-    public void SetFastFollow()
-    {
-        isFollowing = true;
-        speed = 12 * (gameController.bpm / 60);
-    }
-
-    public void StopFollow()
-    {
+        isRising = true;
         isFollowing = false;
+        speed = newSpeed;
+    }
+
+    public void StartFollowing()
+    {
+        isFollowing = true;
+        isRising = false;
+    }
+
+    public void StopCamera()
+    {
+        isFalling = false;
+        isRising = false;
     }
 }
