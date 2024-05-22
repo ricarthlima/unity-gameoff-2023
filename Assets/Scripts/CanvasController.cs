@@ -201,7 +201,9 @@ public class CanvasController : MonoBehaviour
         textInfos.text += "\n";
         textInfos.text += "BPM: " + gameController.bpm.ToString() + "\n";
         textInfos.text += "Beats: " + gameController.beatCount + "\n";
+        textInfos.text += "Beats Internos: " + gameController.innerBeatCount + "\n";
         textInfos.text += "Beats to Portal: " + gameController.beatsToPortal + "\n";
+        textInfos.text += "Gerar Portais: " + gameController.canGeneratePortals + "\n";
         textInfos.text += "\n";
         textInfos.text += "Height: " + infoController.heightTraveled.ToString("F2") + "m" + "\n";
         textInfos.text += "Max Height: " + infoController.maxHeightTraveled.ToString("F2") + "m" + "\n";
@@ -235,9 +237,9 @@ public class CanvasController : MonoBehaviour
 
     public void ShowRedWarning()
     {
-        warningElapsedTime = 0;
-        warningDuration = 25;
-        panelWarning.color = new Color(0.5f, 0, 0, 0.33f);
+        // warningElapsedTime = 0;
+        // warningDuration = 25;
+        // panelWarning.color = new Color(0.5f, 0, 0, 0.33f);
     }
 
     public void ShowWhiteWarning()

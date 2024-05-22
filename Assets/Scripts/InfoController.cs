@@ -58,7 +58,7 @@ public class InfoController : MonoBehaviour
                     {
                         if (gameController.countPortals > maxPortalsDungeon)
                         {
-                            maxPortalsDungeon = gameController.countPortals;
+                            maxPortalsDungeon = gameController.beatCount;
                             prefs.RecPortalsDungeon = maxPortalsDungeon;
                             canvasController.MoveProgressRecord(maxPortalsDungeon / gameController.levelData.GetPortalsToEnd(TowerLevel.dungeon), TowerLevel.dungeon);
 

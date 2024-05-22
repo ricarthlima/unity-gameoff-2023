@@ -62,7 +62,7 @@ public class GameController : MonoBehaviour
 
     // New game controllers
     public bool isGamePaused = true;
-    bool isGameInCutscene = true; // Começos de fase são cut scene, cut scenes são cut scenes, queda é cut scene
+    //bool isGameInCutscene = true; // Começos de fase são cut scene, cut scenes são cut scenes, queda é cut scene
 
     // Cut Scenes
     bool needToShowFirstCutsceneDungeon = true;
@@ -77,16 +77,16 @@ public class GameController : MonoBehaviour
     public bool devIsAutoGeneratingPlatforms = false;
     float devTimeScale = 1;
 
-    List<int> listUniqueEventsHappend = new List<int>();
+    List<float> listUniqueEventsHappend = new List<float>();
     Vector2 lastPortalPosition = Vector2.zero;
 
     public float beatsToPortal;
     public int countPortals = 0;
     public int beatsToBeat;
 
-    bool canGeneratePortals = false;
+    public bool canGeneratePortals = false;
 
-    float averageHumanReactionTime = 0.2f;
+    float averageHumanReactionTime = 0;
 
     #endregion
 
@@ -175,36 +175,37 @@ public class GameController : MonoBehaviour
 
             if (GetTimerBeat() > (60f / bpm) && !isPlayerFalling)
             {
-                beatCount += 1;
+                innerBeatCount++;
+                beatCount++;
                 RestartTimerBeat();
             }
 
-            if (!isGameInCutscene)
+            // if (!isGameInCutscene)
+            // {
+            if (!isPlayerFalling)
             {
-                if (!isPlayerFalling)
-                {
-                    CycleUpdateBackground();
-                    CycleGeneratePortalsByBeat();
-                }
-                else
-                {
-                    IsFalling();
-                }
+                CycleUpdateBackground();
+                CycleGeneratePortalsByBeat();
             }
             else
             {
-                if (needToShowFirstCutsceneDungeon)
-                {
-                    StartCoroutine(WaitCutsceneFirstDungeon());
-                    needToShowFirstCutsceneDungeon = false;
-                }
-
-                if (needToShowStairwayCutscene)
-                {
-                    StartCoroutine(WaitCutsceneStairway());
-                    needToShowStairwayCutscene = false;
-                }
+                IsFalling();
             }
+            // }
+            // else
+            // {
+            //     if (needToShowFirstCutsceneDungeon)
+            //     {
+            //         StartCoroutine(WaitCutsceneFirstDungeon());
+            //         needToShowFirstCutsceneDungeon = false;
+            //     }
+
+            //     if (needToShowStairwayCutscene)
+            //     {
+            //         StartCoroutine(WaitCutsceneStairway());
+            //         needToShowStairwayCutscene = false;
+            //     }
+            // }
 
         }
     }
@@ -221,66 +222,69 @@ public class GameController : MonoBehaviour
             newBackground.transform.parent = GameObject.Find("Background").transform;
         }
     }
+    public int innerBeatCount = 0;
+
     void CycleGeneratePortalsByBeat()
     {
-
-
-        if (beatCount % beatsToPortal == 0 && canGeneratePortals)
+        if (innerBeatCount % beatsToPortal == 0 && canGeneratePortals)
         {
             GeneratePortal();
         }
 
         if (GetTimerBeat() > (60f / bpm))
         {
-            beatCount += 1;
+            innerBeatCount++;
+            beatCount++;
             RestartTimerBeat();
         }
     }
 
-    IEnumerator WaitCutsceneFirstDungeon()
-    {
-        maxSpawnX = levelData.GetInitialHorizontalRange(level);
-        canGeneratePortals = false;
+    #region "Old Religion"
+    //IEnumerator WaitCutsceneFirstDungeon()
+    // {
+    //     maxSpawnX = levelData.GetInitialHorizontalRange(level);
+    //     canGeneratePortals = false;
 
-        CleanPortalsAndPlatforms();
+    //     CleanPortalsAndPlatforms();
 
-        player.WalkToCenter(timeAwaintingDungeonFloor - averageHumanReactionTime);
-        audioController.PlayDungeon();
+    //     player.WalkToCenter(timeAwaintingDungeonFloor - averageHumanReactionTime);
+    //     audioController.PlayDungeon();
 
-        cameraFollow.SetFastFollow();
+    //     cameraFollow.SetFastFollow();
 
-        yield return new WaitForSeconds(timeAwaintingDungeonFloor - averageHumanReactionTime);
+    //     yield return new WaitForSeconds(timeAwaintingDungeonFloor - averageHumanReactionTime);
 
-        canGeneratePortals = true;
+    //     canGeneratePortals = true;
 
-        hasMissedClick = false;
+    //     hasMissedClick = false;
 
-        cameraFollow.SetSlowFollow();
+    //     cameraFollow.SetSlowFollow();
 
-        isGameInCutscene = false;
-    }
+    //     isGameInCutscene = false;
+    // }
 
-    IEnumerator WaitCutsceneStairway()
-    {
-        maxSpawnX = 0;
-        beatCount = 0;
+    // IEnumerator WaitCutsceneStairway()
+    // {
+    //     maxSpawnX = 0;
+    //     beatCount = 0;
 
-        CleanPortalsAndPlatforms();
+    //     CleanPortalsAndPlatforms();
 
-        player.WalkToCenter(8.5f);
-        audioController.PlayStairway();
+    //     player.WalkToCenter(8.5f);
+    //     audioController.PlayStairway();
 
-        canGeneratePortals = false;
+    //     canGeneratePortals = false;
 
-        yield return new WaitForSeconds(8.5f);
+    //     yield return new WaitForSeconds(8.5f);
 
 
-        hasMissedClick = false;
+    //     hasMissedClick = false;
 
-        canGeneratePortals = true;
+    //     canGeneratePortals = true;
 
-        isGameInCutscene = false;
-    }
+    //     isGameInCutscene = false;
+    // }
+    #endregion
 
     void CycleTestFalling()
     {
@@ -290,7 +294,7 @@ public class GameController : MonoBehaviour
         }
     }
 
-    void CheckUniqueEvent(TowerLevel towerLevel, int beat, int id, System.Action action)
+    void CheckUniqueEvent(TowerLevel towerLevel, int beat, float id, System.Action action)
     {
         if (level == towerLevel && beatCount == beat && !listUniqueEventsHappend.Contains(id))
         {
@@ -303,94 +307,137 @@ public class GameController : MonoBehaviour
     {
         CheckUniqueEvent(
             towerLevel: TowerLevel.dungeon,
-            beat: 68 - Mathf.FloorToInt(beatsToPortal),
-            id: 1,
+            beat: 14,
+            id: 0,
             action: () =>
                 {
-                    maxSpawnX = 4f;
-                    canvasController.ShowRedWarning();
-                    canGeneratePortals = false;
+                    maxSpawnX = 3f;
+
+                    canGeneratePortals = true;
+                    innerBeatCount = 0;
+
+                    beatsToPortal = 2;
+                    beatsToBeat = 4;
                 }
         );
 
         CheckUniqueEvent(
             towerLevel: TowerLevel.dungeon,
-            beat: 68,
+            beat: 58,
+            id: 1,
+            action: () =>
+                {
+                    maxSpawnX = 5f;
+                    canvasController.ShowRedWarning();
+                    canGeneratePortals = false;
+
+                    beatsToPortal = 1;
+                    beatsToBeat = 4;
+                }
+        );
+
+        CheckUniqueEvent(
+            towerLevel: TowerLevel.dungeon,
+            beat: 66,
             id: 2,
             action: () =>
                 {
-                    beatsToPortal = 3;
+                    innerBeatCount = 0;
+                    listBeatsWithPortals.Clear();
                     canGeneratePortals = true;
                 }
         );
 
         CheckUniqueEvent(
             towerLevel: TowerLevel.dungeon,
-            beat: 130 - Mathf.FloorToInt(beatsToPortal),
+            beat: 94,
             id: 3,
             action: () =>
                 {
                     maxSpawnX = 3.5f;
                     canvasController.ShowRedWarning();
                     canGeneratePortals = false;
+
+                    beatsToPortal = 1;
+                    beatsToBeat = 4;
                 }
         );
 
         CheckUniqueEvent(
             towerLevel: TowerLevel.dungeon,
-            beat: 130,
+            beat: 98,
             id: 4,
             action: () =>
                 {
-                    beatsToPortal = 2;
+                    innerBeatCount = 0;
+                    listBeatsWithPortals.Clear();
                     canGeneratePortals = true;
                 }
         );
 
         CheckUniqueEvent(
             towerLevel: TowerLevel.dungeon,
-            beat: 190 - (Mathf.FloorToInt(beatsToPortal) * beatsToBeat),
+            beat: 128,
             id: 5,
             action: () =>
                 {
-                    maxSpawnX = 2;
+                    maxSpawnX = 4f;
                     canvasController.ShowRedWarning();
                     canGeneratePortals = false;
+
+                    beatsToPortal = 1;
+                    beatsToBeat = 2;
+                }
+        );
+
+        CheckUniqueEvent(
+            towerLevel: TowerLevel.dungeon,
+            beat: 132,
+            id: 6,
+            action: () =>
+                {
+                    innerBeatCount = 0;
+                    listBeatsWithPortals.Clear();
+                    canGeneratePortals = true;
+                }
+        );
+
+        CheckUniqueEvent(
+            towerLevel: TowerLevel.dungeon,
+            beat: 180,
+            id: 7,
+            action: () =>
+                {
+                    maxSpawnX = 2f;
+                    canvasController.ShowRedWarning();
+                    canGeneratePortals = false;
+
+                    beatsToPortal = 1;
+                    beatsToBeat = 1;
                 }
         );
 
         CheckUniqueEvent(
             towerLevel: TowerLevel.dungeon,
             beat: 190,
-            id: 6,
+            id: 8,
             action: () =>
                 {
-                    beatsToPortal = 1;
-                    beatsToBeat = 1;
+                    innerBeatCount = 0;
+                    listBeatsWithPortals.Clear();
                     canGeneratePortals = true;
                 }
         );
 
         CheckUniqueEvent(
             towerLevel: TowerLevel.dungeon,
-            beat: 220 - Mathf.FloorToInt(beatsToPortal),
-            id: 7,
+            beat: 228,
+            id: 9,
             action: () =>
                 {
                     maxSpawnX = levelData.GetInitialHorizontalRange(level);
                     canvasController.ShowWhiteWarning();
                     canGeneratePortals = false;
-                }
-        );
-
-        CheckUniqueEvent(
-            towerLevel: TowerLevel.dungeon,
-            beat: 220,
-            id: 8,
-            action: () =>
-                {
-                    beatsToPortal = 4;
-                    canGeneratePortals = true;
                 }
         );
     }
@@ -433,33 +480,16 @@ public class GameController : MonoBehaviour
 
     void StartScene(TowerLevel scene)
     {
-        isGameInCutscene = true;
         bpm = levelData.BPM(scene);
-
-        if (scene == TowerLevel.dungeon)
-        {
-            needToShowFirstCutsceneDungeon = true;
-
-            return;
-        }
-
-        if (scene == TowerLevel.stairway)
-        {
-            needToShowStairwayCutscene = true;
-            return;
-        }
-
-        if (scene == TowerLevel.throne)
-        {
-            return;
-        }
+        audioController.PlayByLevel(scene);
     }
+
     List<int> listBeatsWithPortals = new List<int>();
     void GeneratePortal()
     {
-        if (!listBeatsWithPortals.Contains(beatCount))
+        if (!listBeatsWithPortals.Contains(innerBeatCount))
         {
-            listBeatsWithPortals.Add(beatCount);
+            listBeatsWithPortals.Add(innerBeatCount);
 
             if (countPortals % portalsUntilMoveCamera == 0)
             {
@@ -490,8 +520,10 @@ public class GameController : MonoBehaviour
 
     void IsFalling()
     {
+        innerBeatCount = 0;
         beatCount = 0;
         maxSpawnX = levelData.GetInitialHorizontalRange(level);
+        canGeneratePortals = false;
 
         player.ResetToIdle();
         if (!hasStartedToFall)
@@ -530,16 +562,16 @@ public class GameController : MonoBehaviour
     public void TouchedGround(TowerLevel paramLevel)
     {
         listUniqueEventsHappend.Clear();
-
-        print("Tocou o chão em " + paramLevel);
         level = paramLevel;
 
         hasStartedToFall = false;
         if (!isGamePaused && !hasTouchedGround)
         {
             player.ResetToIdle();
+            player.WalkToCenter(5);
             StartScene(level);
             StabilizePlayerAndCamera();
+            innerBeatCount = 0;
             beatCount = 0;
             beatsToPortal = levelData.GetBeatsToPortal(level);
             countPortals = 0;
@@ -563,7 +595,7 @@ public class GameController : MonoBehaviour
     {
         player.transform.position = position;
 
-        progress = countPortals / levelData.GetPortalsToEnd(level);
+        progress = beatCount / levelData.GetPortalsToEnd(level);
 
         canvasController.MoveProgressMage(progress, level: level);
     }
@@ -652,8 +684,15 @@ public class GameController : MonoBehaviour
     #endregion
 
     #region "Game"
+    bool isFirstTimeStarted = true;
     public void StartGame()
     {
+        if (isFirstTimeStarted)
+        {
+            audioController.PlayByLevel(level);
+            player.WalkToCenter(5);
+            isFirstTimeStarted = false;
+        }
         PauseGame();
     }
 

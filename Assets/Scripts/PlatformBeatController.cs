@@ -84,18 +84,28 @@ public class PlatformBeatController : MonoBehaviour
                         // Libera clique correto
                         canHitTheBeat = true;
 
-                        // Indicador fica amaerelo
-                        //currentBeatIndicator.MakeYellow();
+                        // Indicador fica amarelo
+                        MakeYellow();
                         beatSteps++;
                     }
                     return;
                 }
             case 2:
                 {
-                    if (timePassed > bpmTime())
+                    if (timePassed > timeTeleportPlayer())
                     {
                         gameController.TeleportPlayer(transform.position);
                         beatSteps++;
+                    }
+                    return;
+                }
+            case 3:
+                {
+                    if (timePassed > timeDenyClick())
+                    {
+                        beatSteps++;
+                        canHitTheBeat = false;
+                        MakeRed();
                     }
                     return;
                 }
@@ -104,14 +114,19 @@ public class PlatformBeatController : MonoBehaviour
 
     public void OnTouched(Vector2 touchPosition, bool needToConvert = true)
     {
-        if (!hasClicked && canHitTheBeat)
+
+        if (!hasClicked)
         {
             hasClicked = true;
-            GeneratePlatform(touchPosition, needToConvert);
-        }
-        else
-        {
-            gameController.HasMissedClick();
+            if (canHitTheBeat)
+            {
+
+                GeneratePlatform(touchPosition, needToConvert);
+            }
+            else
+            {
+                gameController.HasMissedClick();
+            }
         }
 
     }
@@ -150,7 +165,17 @@ public class PlatformBeatController : MonoBehaviour
 
     float timeAllowClick()
     {
-        return bpmTime() * 0.75f;
+        return bpmTime() * 0.85f;
+    }
+
+    float timeTeleportPlayer()
+    {
+        return bpmTime() * 1.05f;
+    }
+
+    float timeDenyClick()
+    {
+        return bpmTime() * 1.25f;
     }
 
     float timeDie()

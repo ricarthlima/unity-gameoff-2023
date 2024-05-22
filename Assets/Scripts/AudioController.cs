@@ -52,6 +52,16 @@ public class AudioController : MonoBehaviour
 
     [Header("Throne Settings")]
     [SerializeField] private AudioClip bgmThrone;
+
+    public void PlayByLevel(TowerLevel level, bool fromTheBegining = true)
+    {
+        switch (level)
+        {
+            case TowerLevel.dungeon: { PlayDungeon(fromTheBegining); break; }
+            case TowerLevel.stairway: { PlayStairway(fromTheBegining); break; }
+            case TowerLevel.throne: { PlayThrone(fromTheBegining); break; }
+        }
+    }
     public void PlayDungeon(bool fromTheBegining = true)
     {
         sourceEffectFalling.Stop();
@@ -98,6 +108,7 @@ public class AudioController : MonoBehaviour
     public void ChangeBGMSpeed(float speed)
     {
         sourceBGM.pitch = speed;
+        sourceMetronome.pitch = speed;
     }
 
     #endregion
@@ -110,6 +121,7 @@ public class AudioController : MonoBehaviour
     {
         sourceMenu.Stop();
         sourceBGM.Stop();
+        sourceMetronome.Stop();
         sourceEffectFalling.time = 0;
         sourceEffectFalling.Play();
     }

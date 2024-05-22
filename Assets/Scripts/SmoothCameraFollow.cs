@@ -55,13 +55,13 @@ public class SmoothCameraFollow : MonoBehaviour
     public void SetSlowFollow()
     {
         isFollowing = true;
-        speed = 4 * (gameController.bpm / 60);
+        speed = 6 * (gameController.bpm / 60);
     }
 
     public void SetFastFollow()
     {
         isFollowing = true;
-        speed = 8 * (gameController.bpm / 60);
+        speed = 12 * (gameController.bpm / 60);
     }
 
     public void StopFollow()
