@@ -79,7 +79,7 @@ public class PlatformBeatController : MonoBehaviour
                 }
             case 1:
                 {
-                    if (timePassed > timeAllowClick())
+                    if (timePassed > timeAllowClick() && !gameController.hasMissedClick)
                     {
                         // Libera clique correto
                         canHitTheBeat = true;
@@ -126,6 +126,7 @@ public class PlatformBeatController : MonoBehaviour
             else
             {
                 gameController.HasMissedClick();
+                MakeRed();
             }
         }
 
