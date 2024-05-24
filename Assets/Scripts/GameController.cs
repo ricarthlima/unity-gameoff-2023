@@ -31,6 +31,7 @@ public class GameController : MonoBehaviour
     public SmoothCameraFollow cameraFollow;
     public PlayerController player;
     public GameObject guidePlataform;
+    public TrailFXController trailFX;
 
     [Header("Background Objects")]
     [SerializeField] private GameObject backgroundLoopPrefab;
@@ -603,9 +604,22 @@ public class GameController : MonoBehaviour
     }
 
     public float progress;
+
+    public void EmitTrail(Vector2 position)
+    {
+        trailFX.Emitting(position);
+    }
+
+    public void StartPortalAnimation()
+    {
+        player.AnimationEnterPortal();
+    }
+
     public void TeleportPlayer(Vector2 position)
     {
         player.transform.position = position;
+
+        player.AnimationExitPortal();
 
         progress = beatCount / levelData.GetPortalsToEnd(level);
 
@@ -735,4 +749,14 @@ public class GameController : MonoBehaviour
         Debug.Log("QUIT");
     }
     #endregion
+
+    public float BPS()
+    {
+        return 60 / bpm;
+    }
+
+    public float BPSR()
+    {
+        return (60 / bpm) * beatsToBeat * beatsToPortal;
+    }
 }

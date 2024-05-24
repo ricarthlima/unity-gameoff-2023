@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
 {
     public GameController gameController;
     public Rigidbody2D rb;
+
     public bool isTouchingGround;
     public bool isWalkingToCenter;
     Animator animator;
@@ -17,6 +18,9 @@ public class PlayerController : MonoBehaviour
     float timeToCenter;
 
     public GameObject sprite;
+
+    [Header("Portal")]
+    [SerializeField] private GameObject portalSFX;
 
     private void Start()
     {
@@ -33,14 +37,26 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void AnimationEnterPortal(bool value = true)
+    public void AnimationEnterPortal()
     {
-        animator.SetBool("enterPortal", value);
+        animator.SetBool("enterPortal", true);
+        portalSFX.SetActive(true);
     }
 
-    public void AnimationExitPortal(bool value = true)
+    public void AnimationEnterPortalExit()
     {
-        animator.SetBool("exitPortal", value);
+        animator.SetBool("enterPortal", false);
+    }
+
+    public void AnimationExitPortal()
+    {
+        animator.SetBool("exitPortal", true);
+        portalSFX.SetActive(false);
+    }
+
+    public void AnimationExitPortalExit()
+    {
+        animator.SetBool("exitPortal", false);
     }
 
     public void WalkToCenter(float timer)

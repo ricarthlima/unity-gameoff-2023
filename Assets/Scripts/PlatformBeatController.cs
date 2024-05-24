@@ -86,11 +86,21 @@ public class PlatformBeatController : MonoBehaviour
 
                         // Indicador fica amarelo
                         MakeYellow();
+                        gameController.EmitTrail(transform.position);
                         beatSteps++;
                     }
                     return;
                 }
             case 2:
+                {
+                    if (timePassed > timeStartPortalAnimation())
+                    {
+                        gameController.StartPortalAnimation();
+                        beatSteps++;
+                    }
+                    return;
+                }
+            case 3:
                 {
                     if (timePassed > timeTeleportPlayer())
                     {
@@ -99,7 +109,7 @@ public class PlatformBeatController : MonoBehaviour
                     }
                     return;
                 }
-            case 3:
+            case 4:
                 {
                     if (timePassed > timeDenyClick())
                     {
@@ -167,6 +177,11 @@ public class PlatformBeatController : MonoBehaviour
     float timeAllowClick()
     {
         return bpmTime() * 0.925f;
+    }
+
+    float timeStartPortalAnimation()
+    {
+        return bpmTime() * 0.95f;
     }
 
     float timeTeleportPlayer()
