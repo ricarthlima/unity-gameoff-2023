@@ -1,9 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public enum TowerLevel { dungeon, stairway, throne };
 
@@ -227,7 +224,7 @@ public class GameController : MonoBehaviour
 
     void CycleGeneratePortalsByBeat()
     {
-        if (innerBeatCount % beatsToPortal == 0 && canGeneratePortals)
+        if (innerBeatCount % beatsToPortal == 0 && canGeneratePortals && !hasMissedClick)
         {
             GeneratePortal();
         }
@@ -640,9 +637,20 @@ public class GameController : MonoBehaviour
         canvasController.UpdateImagesPlatform();
     }
 
-    public void HasMissedClick()
+    public void HasMissedClick(GameObject last = null)
     {
         hasMissedClick = true;
+
+        GameObject[] listBeats = GameObject.FindGameObjectsWithTag("Portal");
+
+        foreach (GameObject beat in listBeats)
+        {
+            if (beat != null && beat != last)
+            {
+                Destroy(beat);
+            }
+        }
+
         audioController.PlaySFXError();
         canvasController.ShowMistakeGuide();
     }

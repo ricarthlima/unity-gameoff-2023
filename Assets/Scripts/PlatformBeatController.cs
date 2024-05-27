@@ -79,14 +79,17 @@ public class PlatformBeatController : MonoBehaviour
                 }
             case 1:
                 {
-                    if (timePassed > timeAllowClick() && !gameController.hasMissedClick)
+                    if (timePassed > timeAllowClick())
                     {
-                        // Libera clique correto
-                        canHitTheBeat = true;
+                        if (!gameController.hasMissedClick)
+                        {
+                            // Libera clique correto
+                            canHitTheBeat = true;
 
-                        // Indicador fica amarelo
-                        MakeYellow();
-                        gameController.EmitTrail(transform.position);
+                            // Indicador fica amarelo
+                            MakeYellow();
+                            gameController.EmitTrail(transform.position);
+                        }
                         beatSteps++;
                     }
                     return;
@@ -135,7 +138,7 @@ public class PlatformBeatController : MonoBehaviour
             }
             else
             {
-                gameController.HasMissedClick();
+                gameController.HasMissedClick(this.gameObject);
                 MakeRed();
             }
         }
