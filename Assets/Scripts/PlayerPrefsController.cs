@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +12,7 @@ public class PlayerPrefsController : MonoBehaviour
     private const string keyRecHigh = "REC_HIGH";
     private const string keyRecTime = "REC_TIME";
     private const string keyRecPortalsDungeon = "REC_PORTALS_DUNGEON";
+    private const string keyStatisticForNerds = "STATISTIC";
 
     private float soundBGM;
     private float soundMTR;
@@ -18,6 +20,7 @@ public class PlayerPrefsController : MonoBehaviour
     private float recHigh;
     private float recTime;
     private int recPortalsDungeon;
+    private bool isStatisticForNerds;
 
     void Start()
     {
@@ -32,6 +35,16 @@ public class PlayerPrefsController : MonoBehaviour
         recHigh = PlayerPrefs.GetFloat(key: keyRecHigh, 0);
         recTime = PlayerPrefs.GetFloat(key: keyRecTime, 0);
         recPortalsDungeon = PlayerPrefs.GetInt(key: keyRecPortalsDungeon, 0);
+
+        int strStatistics = PlayerPrefs.GetInt(keyStatisticForNerds, 0);
+        if (strStatistics == 0)
+        {
+            isStatisticForNerds = false;
+        }
+        else
+        {
+            isStatisticForNerds = true;
+        }
     }
 
     public void ClearAll()
@@ -115,6 +128,26 @@ public class PlayerPrefsController : MonoBehaviour
         {
             recPortalsDungeon = value;
             PlayerPrefs.SetInt(keyRecPortalsDungeon, value);
+        }
+    }
+
+    public bool IsStatisticForNerds
+    {
+        get
+        {
+            return isStatisticForNerds;
+        }
+        set
+        {
+            isStatisticForNerds = value;
+            if (isStatisticForNerds)
+            {
+                PlayerPrefs.SetInt(keyStatisticForNerds, 1);
+            }
+            else
+            {
+                PlayerPrefs.SetInt(keyStatisticForNerds, 0);
+            }
         }
     }
 }

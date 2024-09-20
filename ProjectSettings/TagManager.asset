@@ -9,6 +9,7 @@ TagManager:
   - Portal
   - PlatformBeat
   - StairwayPlatform
+  - UI
   layers:
   - Default
   - TransparentFX

@@ -44,6 +44,7 @@ public class CanvasController : MonoBehaviour
     [SerializeField] private Sprite spriteMistake;
 
     bool isFullScreen = true;
+    bool isStatisticForNerds = false;
     int selectedRes;
 
     float warningElapsedTime;
@@ -56,6 +57,8 @@ public class CanvasController : MonoBehaviour
         ShowScene(InternalScenes.main);
 
         toggleFullScreen.isOn = Screen.fullScreen;
+
+        isStatisticForNerds = prefs.IsStatisticForNerds;
 
         UpdateImagesPlatform();
     }
@@ -71,7 +74,6 @@ public class CanvasController : MonoBehaviour
             warningElapsedTime += Time.deltaTime;
             panelWarning.color = Color.Lerp(panelWarning.color, Color.clear, warningElapsedTime / warningDuration);
         }
-
 
     }
 
@@ -112,11 +114,16 @@ public class CanvasController : MonoBehaviour
         ShowScene(InternalScenes.settings);
     }
 
+    public void ShowMainScene()
+    {
+        ShowScene(InternalScenes.main);
+    }
     public void SettingsSaveButtonClicked()
     {
         prefs.SoundBGM = sliderBGM.value;
         prefs.SoundSFX = sliderSFX.value;
         prefs.SoundMTR = sliderMTR.value;
+        prefs.IsStatisticForNerds = isStatisticForNerds;
 
         Screen.fullScreen = isFullScreen;
         Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
@@ -161,6 +168,11 @@ public class CanvasController : MonoBehaviour
 
 
 
+    public void SetStatistic(bool value)
+    {
+        isStatisticForNerds = value;
+    }
+
     public void SetFullscreen(bool value)
     {
         isFullScreen = value;
@@ -174,7 +186,7 @@ public class CanvasController : MonoBehaviour
     public void MoveProgressMage(float progress, TowerLevel level)
     {
         Vector3 newPos = progressMageRect.anchoredPosition;
-        newPos.y = -450 + (progress * 300);
+        newPos.y = -410 + (progress * 80);
 
         if (level == TowerLevel.stairway) { newPos.y += 300; }
         if (level == TowerLevel.throne) { newPos.y += 600; }
@@ -185,7 +197,7 @@ public class CanvasController : MonoBehaviour
     public void MoveProgressRecord(float progress, TowerLevel level)
     {
         Vector3 newPos = progressMageRecordRect.anchoredPosition;
-        newPos.y = -450 + (progress * 300);
+        newPos.y = -410 + (progress * 80);
 
         if (level == TowerLevel.stairway) { newPos.y += 300; }
         if (level == TowerLevel.throne) { newPos.y += 600; }
@@ -195,6 +207,8 @@ public class CanvasController : MonoBehaviour
 
     public void UpdateUI()
     {
+        textInfos.gameObject.SetActive(isStatisticForNerds);
+
         float fps = 1f / Time.deltaTime;
 
         textInfos.text = "FPS: " + fps.ToString("F2") + "\n";
